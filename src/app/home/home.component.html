@@ -1,1 +1,24 @@
-<p>home works!</p>
+<nav class="navbar navbar-dark bg-primary">
+    <span class="navbar-brand mb-0 h1">Home</span>
+</nav>
+
+<div class="container-fluid h-100">
+    <div class="row h-100 pt-5">
+        <div class="col-6 mx-auto">
+            <div class="card px-4 pb-3">
+                <div class="card-body">
+                    <form>
+                        <div class="form-group py-3">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" aria-describedby="nameHelp"
+                                placeholder="Name">
+                            <small id="nameHelp" class="form-text text-muted">Our promise is to never ask for any
+                                personal info. Go ahead. Use a fake name</small>
+                        </div>
+                        <button type="button" class="btn btn-success w-100" (click)="joinRandomLobby()">Play</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
