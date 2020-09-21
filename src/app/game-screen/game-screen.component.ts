@@ -45,7 +45,7 @@ export class GameScreenComponent implements OnInit, AfterViewChecked {
   sendChatMessage() {
     if (this.chatForm.invalid) return;
 
-    console.log(this.chatMessage);
+
     this.gameSocket.sendALobbyChatMessage(this.chatMessage);
     this.chatMessage = "";
   }

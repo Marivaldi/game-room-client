@@ -21,7 +21,6 @@ export class HomeComponent implements OnInit {
   joinRandomLobby() {
     if (this.gameSocket.isDisconnected()) { return; }
 
-    console.log(this.username);
     this.gameSocket.joinRandomLobby(this.username);
     this.username = "";
   }

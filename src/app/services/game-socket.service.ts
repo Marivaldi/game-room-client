@@ -26,8 +26,6 @@ export class GameSocketService {
 
 
   handleMessage = (message) => {
-    console.log("Message Received:");
-    console.log(message);
     if (!message || !message.type) { return; }
 
     switch (message.type) {
