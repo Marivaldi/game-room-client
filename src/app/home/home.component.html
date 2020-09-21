@@ -7,15 +7,15 @@
         <div class="col-6 mx-auto">
             <div class="card px-4 pb-3">
                 <div class="card-body">
-                    <form>
+                    <form #usernameForm="ngForm">
                         <div class="form-group py-3">
                             <label for="name">Name</label>
-                            <input type="text" class="form-control" id="name" aria-describedby="nameHelp"
-                                placeholder="Name">
+                            <input [ngModel]="username" (ngModelChange)="updateUsername($event)" name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp"
+                                placeholder="Name" required>
                             <small id="nameHelp" class="form-text text-muted">Our promise is to never ask for any
                                 personal info. Go ahead. Use a fake name</small>
                         </div>
-                        <button type="button" class="btn btn-success w-100" (click)="joinRandomLobby()">Play</button>
+                        <button type="button" class="btn btn-success w-100" (click)="joinRandomLobby()" [disabled]="usernameForm.invalid">Play</button>
                     </form>
                 </div>
             </div>

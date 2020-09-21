@@ -7,14 +7,14 @@ import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 })
 export class GameSocketService {
   server_connnection_id: string = "";
-  lobby_id: string = "";
+  lobbyId: string = "";
 
   socket$: WebSocketSubject<any> = webSocket({
     url: 'ws://localhost:8080'
   });
 
   lobbyJoined$: Subject<string> = new Subject<string>();
-  lobbyChatRecieved$: Subject<{sender: string, message: string}> = new Subject<{sender: string, message: string}>();
+  lobbyChatRecieved$: Subject<{sender: string, is_from_me: boolean, is_system_message: boolean,  message: string}> = new Subject<{sender: string, is_from_me: boolean, is_system_message: boolean,  message: string}>();
 
   constructor() {
     this.socket$.subscribe(
@@ -26,18 +26,20 @@ export class GameSocketService {
 
 
   handleMessage = (message) => {
+    console.log("Message Received:");
+    console.log(message);
     if (!message || !message.type) { return; }
 
     switch (message.type) {
       case "CONNECTED":
-        this.server_connnection_id = message.connection_id;
+        this.server_connnection_id = message.connectionId;
         break;
       case "LOBBY_JOINED":
-        this.lobby_id = message.lobby_id;
-        this.lobbyJoined$.next(message.lobby_id);
+        this.lobbyId = message.lobbyId;
+        this.lobbyJoined$.next(message.lobbyId);
         break;
       case "RECEIVE_LOBBY_CHAT":
-        this.lobbyChatRecieved$.next({sender: message.sender, message: message.message});
+        this.lobbyChatRecieved$.next({sender: message.sender, is_from_me: this.isCurrentConnection(message.senderId), is_system_message: this.isSystemMessage(message.senderId), message: message.content});
         break;
     }
   }
@@ -46,16 +48,24 @@ export class GameSocketService {
     return this.socket$ && !this.socket$.closed;
   }
 
+  isSystemMessage(connection_id): boolean {
+    return connection_id === "SYSTEM";
+  }
+
   isDisconnected(): boolean {
     return !this.isConnected();
   }
 
-  joinRandomLobby() {
-    this.socket$.next({ type: "JOIN_RANDOM_LOBBY" });
+  joinRandomLobby(username: string) {
+    this.socket$.next({ type: "JOIN_RANDOM_LOBBY", username: username, connectionId: this.server_connnection_id });
   }
 
   sendALobbyChatMessage(message) {
-    this.socket$.next({ type: "SEND_LOBBY_CHAT", lobby_id: this.lobby_id, message: message });
+    this.socket$.next({ type: "SEND_LOBBY_CHAT", connectionId: this.server_connnection_id, lobbyId: this.lobbyId, content: message });
+  }
+
+  isCurrentConnection(connection_id: string) {
+    return this.server_connnection_id === connection_id;
   }
 
 }
