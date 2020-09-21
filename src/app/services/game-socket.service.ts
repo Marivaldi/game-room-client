@@ -15,6 +15,7 @@ export class GameSocketService {
 
   lobbyJoined$: Subject<string> = new Subject<string>();
   lobbyChatRecieved$: Subject<{sender: string, is_from_me: boolean, is_system_message: boolean,  message: string}> = new Subject<{sender: string, is_from_me: boolean, is_system_message: boolean,  message: string}>();
+  gameStart$: Subject<any> = new Subject<any>();
 
   constructor() {
     this.socket$.subscribe(
@@ -38,6 +39,9 @@ export class GameSocketService {
         break;
       case "RECEIVE_LOBBY_CHAT":
         this.lobbyChatRecieved$.next({sender: message.sender, is_from_me: this.isCurrentConnection(message.senderId), is_system_message: this.isSystemMessage(message.senderId), message: message.content});
+        break;
+      case "GAME_START":
+        this.gameStart$.next();
         break;
     }
   }
