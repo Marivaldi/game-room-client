@@ -12,6 +12,9 @@ export class GameScreenComponent implements OnInit, AfterViewChecked {
   chatMessage: string;
   lobby_id: string;
   messageFeed = [];
+  interval;
+  showCountdown: boolean = false;
+  timeUntilGameStart: number = 5;
   @ViewChild('chatWindow') private chatWindow: ElementRef;
   @ViewChild('chatForm') private chatForm: NgForm;
 
@@ -28,6 +31,8 @@ export class GameScreenComponent implements OnInit, AfterViewChecked {
     this.gameSocket.lobbyChatRecieved$.subscribe((message) => {
       this.messageFeed.push(message);
     });
+
+    this.gameSocket.gameStart$.subscribe(() => this.startTimer());
 
     this.scrollToBottom();
   }
@@ -63,5 +68,16 @@ export class GameScreenComponent implements OnInit, AfterViewChecked {
 
   inTheRightLobby(lobbyId: string): boolean {
     return this.gameSocket.lobbyId === lobbyId;
+  }
+
+  startTimer() {
+    this.showCountdown = true;
+    this.interval = setInterval(() => {
+      if(this.timeUntilGameStart > 0) {
+        this.timeUntilGameStart--;
+      } else {
+        clearInterval(this.interval);
+      }
+    },1000)
   }
 }
