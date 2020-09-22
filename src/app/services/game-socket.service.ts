@@ -19,13 +19,28 @@ export class GameSocketService {
   gameStart$: Subject<any> = new Subject<any>();
   userIsTyping$: Subject<any> = new Subject<any>();
   userStoppedTyping$: Subject<any> = new Subject<any>();
+  heartbeatInterval;
 
   constructor() {
+    this.connectToSocketServer();
+  }
+
+
+  connectToSocketServer() {
     this.socket$.subscribe(
       this.handleMessage,
-      err => console.log("ERROR: ", err),
-      () => console.log("socket_connection_closed")
+      this.showErrorAndReconnect,
+      this.logDisconnect
     );
+  }
+
+  showErrorAndReconnect = (err) => {
+    console.log("ERROR: ", err);
+    this.connectToSocketServer();
+  }
+
+  logDisconnect = () => {
+    console.log("Socket Connection Closed");
   }
 
 
@@ -35,6 +50,7 @@ export class GameSocketService {
     switch (message.type) {
       case "CONNECTED":
         this.server_connnection_id = message.connectionId;
+        this.startHeartbeat()
         break;
       case "LOBBY_JOINED":
         this.lobbyId = message.lobbyId;
@@ -52,7 +68,18 @@ export class GameSocketService {
       case "USER_STOPPED_TYPING":
         this.userStoppedTyping$.next();
         break;
+      case "PONG":
+      default:
+        break;
     }
+  }
+
+  startHeartbeat() {
+    this.heartbeatInterval = setInterval(() => this.sendPing() , environment.socketHeartbeatInterval)
+  }
+
+  sendPing() {
+    this.socket$.next({type: "PING", connectionId: this.server_connnection_id});
   }
 
   isConnected(): boolean {

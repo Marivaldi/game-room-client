@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  socketURL: "ws://localhost:8080"
+  socketURL: "ws://localhost:8080",
+  socketHeartbeatInterval: 10000
 };
 
 /*
