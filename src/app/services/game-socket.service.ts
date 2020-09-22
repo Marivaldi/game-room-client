@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class GameSocketService {
   lobbyId: string = "";
 
   socket$: WebSocketSubject<any> = webSocket({
-    url: 'ws://localhost:8080'
+    url: environment.socketURL
   });
 
   lobbyJoined$: Subject<string> = new Subject<string>();

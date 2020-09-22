@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  socketURL: "wss://my-game-socket-server.herokuapp.com/"
 };
