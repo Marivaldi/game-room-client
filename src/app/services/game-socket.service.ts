@@ -17,6 +17,8 @@ export class GameSocketService {
   lobbyJoined$: Subject<string> = new Subject<string>();
   lobbyChatRecieved$: Subject<{sender: string, is_from_me: boolean, is_system_message: boolean,  message: string}> = new Subject<{sender: string, is_from_me: boolean, is_system_message: boolean,  message: string}>();
   gameStart$: Subject<any> = new Subject<any>();
+  userIsTyping$: Subject<any> = new Subject<any>();
+  userStoppedTyping$: Subject<any> = new Subject<any>();
 
   constructor() {
     this.socket$.subscribe(
@@ -43,6 +45,12 @@ export class GameSocketService {
         break;
       case "GAME_START":
         this.gameStart$.next();
+        break;
+      case "USER_IS_TYPING":
+        this.userIsTyping$.next();
+        break;
+      case "USER_STOPPED_TYPING":
+        this.userStoppedTyping$.next();
         break;
     }
   }
@@ -71,4 +79,11 @@ export class GameSocketService {
     return this.server_connnection_id === connection_id;
   }
 
+  startTyping() {
+    this.socket$.next({ type: "USER_IS_TYPING", connectionId: this.server_connnection_id, lobbyId: this.lobbyId});
+  }
+
+  stopTyping() {
+    this.socket$.next({ type: "USER_STOPPED_TYPING", connectionId: this.server_connnection_id, lobbyId: this.lobbyId});
+  }
 }

@@ -13,6 +13,7 @@
                                         {{message.message}}
                                     </span>
                                 </div>
+                                <span *ngIf="someoneIsTyping" class="text-secondary font-italic"> <img src="../../assets/loading-elipsis.gif" style="max-height: 30px;"/> Someone is typing</span>
                             </div>
                         </div>
                     </div>
@@ -21,7 +22,7 @@
                     <div class="col-12 py-2 px-0">
                         <form #chatForm="ngForm">
                             <div class="input-group">
-                                <textarea (keydown)="keyDownFunction($event)" name="chatMessage" [ngModel]="chatMessage"
+                                <textarea (keydown)="keyDownFunction($event)" (keyup)="keyUpFunction($event)" name="chatMessage" [ngModel]="chatMessage"
                                     (ngModelChange)="updateChatMessage($event)" rows="4" class="form-control"
                                     style="resize: none;" required></textarea>
 

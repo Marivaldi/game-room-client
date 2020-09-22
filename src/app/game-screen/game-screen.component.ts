@@ -14,9 +14,12 @@ export class GameScreenComponent implements OnInit, AfterViewChecked {
   messageFeed = [];
   timerInterval;
   waitingInterval;
+  typingTimeout;
   showCountdown: boolean = false;
   timeUntilGameStart: number = 10;
   waitingElipses: string = "";
+  someoneIsTyping: boolean = false;
+  alreadySentTypingMessage: boolean = false;
   @ViewChild('chatWindow') private chatWindow: ElementRef;
   @ViewChild('chatForm') private chatForm: NgForm;
 
@@ -37,8 +40,9 @@ export class GameScreenComponent implements OnInit, AfterViewChecked {
     this.gameSocket.gameStart$.subscribe(() => this.startTimer());
 
     this.scrollToBottom();
-
     this.startWaiting();
+    this.gameSocket.userIsTyping$.subscribe(() => this.someoneIsTyping = true);
+    this.gameSocket.userStoppedTyping$.subscribe(() => this.someoneIsTyping = false);
   }
 
   ngAfterViewChecked() {
@@ -68,6 +72,30 @@ export class GameScreenComponent implements OnInit, AfterViewChecked {
       this.sendChatMessage();
       return false;
     }
+
+    if(this.alreadySentTypingMessage) return;
+
+    this.startedTyping();
+    this.alreadySentTypingMessage = true;
+  }
+
+  startedTyping() {
+    clearTimeout(this.typingTimeout);
+    this.gameSocket.startTyping();
+  }
+
+  keyUpFunction(event) {
+    if (event.keyCode === 13) return false;
+
+    this.stoppedTyping();
+  }
+
+  stoppedTyping() {
+    clearTimeout(this.typingTimeout);
+    this.typingTimeout = setTimeout(() => {
+      this.gameSocket.stopTyping();
+      this.alreadySentTypingMessage = false;
+    }, 1000);
   }
 
   inTheRightLobby(lobbyId: string): boolean {
