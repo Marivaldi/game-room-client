@@ -9,11 +9,15 @@
                 <div class="card-body">
                     <form #usernameForm="ngForm">
                         <div class="form-group py-3">
-                            <label for="name">Name</label>
+                            <label for="name"><span class="text-danger">*</span> Name</label>
                             <input [ngModel]="username" (ngModelChange)="updateUsername($event)" name="name" type="text" class="form-control" id="name" aria-describedby="nameHelp"
-                                placeholder="Name" required>
+                                placeholder="Please type a name..." required pattern="^[a-zA-Z0-9]{4,15}$" #name="ngModel">
                             <small id="nameHelp" class="form-text text-muted">Our promise is to never ask for any
                                 personal info. Go ahead. Use a fake name</small>
+                            <div *ngIf="name.invalid && (name.dirty || name.touched)" class="text-danger">
+                                <div *ngIf="name.errors?.pattern">The name must be 4-15 alphanumeric characters.</div>
+                                <div *ngIf="name.errors?.required">A name is required</div>
+                            </div>
                         </div>
                         <button type="button" class="btn btn-success w-100" (click)="joinRandomLobby()" [disabled]="usernameForm.invalid">Play</button>
                     </form>
