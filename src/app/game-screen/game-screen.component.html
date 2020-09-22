@@ -24,7 +24,7 @@
                             <div class="input-group">
                                 <textarea (keydown)="keyDownFunction($event)" (keyup)="keyUpFunction($event)" name="chatMessage" [ngModel]="chatMessage"
                                     (ngModelChange)="updateChatMessage($event)" rows="4" class="form-control"
-                                    style="resize: none;" required></textarea>
+                                    style="resize: none;" required maxlength="275"></textarea>
 
                             </div>
                             <button class="btn btn-success mt-2 w-100" type="button" (click)="sendChatMessage()"
