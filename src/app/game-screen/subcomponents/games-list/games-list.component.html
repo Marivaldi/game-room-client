@@ -1,1 +1,16 @@
-<p>games-list works!</p>
+<div class="container-fluid pt-3 h-100">
+    <div class="row">
+        <div *ngFor="let game of games" class="col-4 pb-2">
+            <div class="card">
+                <div class="card-body">
+                    <span class="float-right badge badge-pill badge-light">{{game.votes}}</span>
+                    <h5 class="card-title">{{ game.title }} </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ game.subtitle }}</h6>
+                    <p class="card-text">{{ game.description }}</p>
+                    <button class="btn btn-link card-link float-right">Play</button>
+                    <button class="btn btn-link card-link text-info float-right">Vote</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
