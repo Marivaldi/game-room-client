@@ -20,6 +20,7 @@ export class GameSocketService {
   userIsTyping$: Subject<any> = new Subject<any>();
   userStoppedTyping$: Subject<any> = new Subject<any>();
   heartbeatInterval;
+  isLobbyHost: boolean = false;
 
   constructor() {
     this.connectToSocketServer();
@@ -76,6 +77,8 @@ export class GameSocketService {
       case "USER_STOPPED_TYPING":
         this.userStoppedTyping$.next();
         break;
+      case "LOBBY_HOST":
+        this.makeMeTheHost();
       case "PONG":
       default:
         break;
@@ -132,6 +135,10 @@ export class GameSocketService {
 
   isSystemInfo(level: string) {
     return level === "INFO";
+  }
+
+  makeMeTheHost() {
+    this.isLobbyHost = true;
   }
 }
 
