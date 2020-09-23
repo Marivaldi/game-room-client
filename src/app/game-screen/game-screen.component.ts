@@ -73,6 +73,7 @@ export class GameScreenComponent implements OnInit, AfterViewChecked {
   keyDownFunction(event) {
     if (event.keyCode === 13) {
       this.sendChatMessage();
+      event.stopPropagation();
       return false;
     }
 
@@ -88,7 +89,10 @@ export class GameScreenComponent implements OnInit, AfterViewChecked {
   }
 
   keyUpFunction(event) {
-    if (event.keyCode === 13) return false;
+    if (event.keyCode === 13) {
+      event.stopPropagation();
+      return false;
+    }
 
     this.stoppedTyping();
   }
