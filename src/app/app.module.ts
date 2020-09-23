@@ -7,13 +7,15 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { HomeComponent } from './home/home.component';
 import { GameScreenComponent } from './game-screen/game-screen.component';
 import { FormsModule } from '@angular/forms';
+import { LobbyChatComponent } from './game-screen/subcomponents/lobby-chat/lobby-chat.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     PageNotFoundComponent,
     HomeComponent,
-    GameScreenComponent
+    GameScreenComponent,
+    LobbyChatComponent
   ],
   imports: [
     BrowserModule,

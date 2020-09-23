@@ -1,0 +1,81 @@
+.session-textchat {
+  height: 82vh;
+}
+
+.session-textchat .past-messages {
+  width: 100%;
+  max-width: 980px;
+  height: 100%;
+  margin: 0 auto;
+  overflow-y: auto;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.session-textchat .past-messages> :first-child {
+  margin-top: auto !important;
+}
+
+.session-textchat .past-messages .receiver,
+.session-textchat .past-messages .sender {
+  flex: 0 0 47px;
+  margin: 0 0 10px;
+}
+
+.session-textchat .past-messages .receiver .message,
+.session-textchat .past-messages .sender .message {
+  display: inline-block;
+  padding: 17px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+
+.session-textchat .past-messages .receiver {
+  -webkit-align-self: flex-start;
+  align-self: flex-start;
+  background: #f4f4f4;
+  color: #535353;
+  min-width: 90%;
+}
+
+.session-textchat .past-messages .system {
+  -webkit-align-self: flex-start;
+  align-self: flex-start;
+  min-width: 90%;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 0;
+  font-weight: bold;
+}
+
+
+.session-textchat .past-messages .sender {
+  -webkit-align-self: flex-end;
+  min-width: 90%;
+  align-self: flex-end;
+  background: rgba(0, 80, 255, 0.15);
+  color: #0050ff;
+}
+
+.session-textchat .past-messages::-webkit-scrollbar {
+  width: 8px;
+  /* width of the entire scrollbar */
+}
+
+.session-textchat .past-messages::-webkit-scrollbar-track {
+  background: #dddbdb;
+  /* color of the tracking area */
+}
+
+.session-textchat .past-messages::-webkit-scrollbar-thumb {
+  background-color: black;
+  /* color of the scroll thumb */
+  border-radius: 20px;
+  /* roundness of the scroll thumb */
+  border: 3px solid rgb(29, 29, 29);
+  /* creates padding around scroll thumb */
+}
