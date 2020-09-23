@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 import { environment } from 'src/environments/environment';
+import { Game } from '../models/game';
+import { GameVote } from '../models/game-vote';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +21,7 @@ export class GameSocketService {
   gameStart$: Subject<any> = new Subject<any>();
   userIsTyping$: Subject<any> = new Subject<any>();
   userStoppedTyping$: Subject<any> = new Subject<any>();
+  updateGameVotes$: Subject<GameVote[]> = new Subject<GameVote[]>();
   heartbeatInterval;
   isLobbyHost: boolean = false;
 
@@ -79,6 +82,8 @@ export class GameSocketService {
         break;
       case "LOBBY_HOST":
         this.makeMeTheHost();
+      case "UPDATE_GAME_VOTES" :
+        this.updateGameVotes$.next(message.votes as GameVote[])
       case "PONG":
       default:
         break;
@@ -139,6 +144,10 @@ export class GameSocketService {
 
   makeMeTheHost() {
     this.isLobbyHost = true;
+  }
+
+  voteFor(game: Game) {
+    this.socket$.next({type: "VOTE_FOR_GAME", lobbyId: this.lobbyId ,gameKey: game.key, connectionId: this.server_connnection_id});
   }
 }
 
