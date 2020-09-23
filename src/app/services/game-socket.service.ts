@@ -15,7 +15,7 @@ export class GameSocketService {
   });
 
   lobbyJoined$: Subject<string> = new Subject<string>();
-  lobbyChatRecieved$: Subject<{sender: string, is_from_me: boolean, is_system_message: boolean,  message: string}> = new Subject<{sender: string, is_from_me: boolean, is_system_message: boolean,  message: string}>();
+  lobbyChatRecieved$: Subject<ChatMessage> = new Subject<ChatMessage>();
   gameStart$: Subject<any> = new Subject<any>();
   userIsTyping$: Subject<any> = new Subject<any>();
   userStoppedTyping$: Subject<any> = new Subject<any>();
@@ -57,7 +57,15 @@ export class GameSocketService {
         this.lobbyJoined$.next(message.lobbyId);
         break;
       case "RECEIVE_LOBBY_CHAT":
-        this.lobbyChatRecieved$.next({sender: message.sender, is_from_me: this.isCurrentConnection(message.senderId), is_system_message: this.isSystemMessage(message.senderId), message: message.content});
+        this.lobbyChatRecieved$.next({
+          sender: message.sender,
+          is_from_me: this.isCurrentConnection(message.senderId),
+          is_system_message: this.isSystemMessage(message.senderId),
+          message: message.content,
+          isSystemSuccess: this.isSystemSuccess(message.level),
+          isSystemDanger: this.isSystemDanger(message.level),
+          isSystemInfo: this.isSystemInfo(message.level)
+        });
         break;
       case "GAME_START":
         this.gameStart$.next();
@@ -75,11 +83,11 @@ export class GameSocketService {
   }
 
   startHeartbeat() {
-    this.heartbeatInterval = setInterval(() => this.sendPing() , environment.socketHeartbeatInterval)
+    this.heartbeatInterval = setInterval(() => this.sendPing(), environment.socketHeartbeatInterval)
   }
 
   sendPing() {
-    this.socket$.next({type: "PING", connectionId: this.server_connnection_id});
+    this.socket$.next({ type: "PING", connectionId: this.server_connnection_id });
   }
 
   isConnected(): boolean {
@@ -107,10 +115,32 @@ export class GameSocketService {
   }
 
   startTyping() {
-    this.socket$.next({ type: "USER_IS_TYPING", connectionId: this.server_connnection_id, lobbyId: this.lobbyId});
+    this.socket$.next({ type: "USER_IS_TYPING", connectionId: this.server_connnection_id, lobbyId: this.lobbyId });
   }
 
   stopTyping() {
-    this.socket$.next({ type: "USER_STOPPED_TYPING", connectionId: this.server_connnection_id, lobbyId: this.lobbyId});
+    this.socket$.next({ type: "USER_STOPPED_TYPING", connectionId: this.server_connnection_id, lobbyId: this.lobbyId });
   }
+
+  isSystemDanger(level: string) {
+    return level === "DANGER";
+  }
+
+  isSystemSuccess(level: string) {
+    return level === "SUCCESS";
+  }
+
+  isSystemInfo(level: string) {
+    return level === "INFO";
+  }
+}
+
+class ChatMessage {
+  sender: string;
+  is_from_me: boolean;
+  is_system_message: boolean;
+  message: string;
+  isSystemSuccess: boolean;
+  isSystemDanger: boolean;
+  isSystemInfo: boolean;
 }

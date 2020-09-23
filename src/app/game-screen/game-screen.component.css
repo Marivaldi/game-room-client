@@ -45,8 +45,6 @@
 .session-textchat .past-messages .system {
     -webkit-align-self: flex-start;
     align-self: flex-start;
-    background: #FDFD96 ;
-    color: #3a3939;
     min-width: 90%;
     margin-top: 5px;
     margin-bottom: 5px;
