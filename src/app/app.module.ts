@@ -11,6 +11,7 @@ import { GamesListComponent } from './game-screen/subcomponents/games-list/games
 import { LobbyChatComponent } from './game-screen/subcomponents/lobby-chat/lobby-chat.component';
 import { PreStartComponent } from './game-screen/subcomponents/pre-start/pre-start.component';
 import { TestGameComponent } from './game-screen/games/test-game/test-game.component';
+import { GameOverComponent } from './game-screen/subcomponents/game-over/game-over.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { TestGameComponent } from './game-screen/games/test-game/test-game.compo
     GamesListComponent,
     LobbyChatComponent,
     PreStartComponent,
-    TestGameComponent
+    TestGameComponent,
+    GameOverComponent
   ],
   imports: [
     BrowserModule,

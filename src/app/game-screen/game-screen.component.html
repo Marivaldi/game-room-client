@@ -4,8 +4,9 @@
             <app-lobby-chat></app-lobby-chat>
         </div>
         <div class="col-9" style="max-height: 100vh; min-height: 100vh;">
-            <app-games-list *ngIf="!aGameIsStarting && !theGameHasStarted"></app-games-list>
+            <app-games-list *ngIf="!aGameIsStarting && !theGameHasStarted && !showGameOverScreen"></app-games-list>
             <app-pre-start *ngIf="aGameIsStarting" (startTheGame)="startTheGame()"></app-pre-start>
+            <app-game-over *ngIf="showGameOverScreen" [winners]="winners" (closeMe)="closeGameOverScreen()"></app-game-over>
             <app-test-game *ngIf="theGameHasStarted && activeGame === 'TEST_GAME'"></app-test-game>
         </div>
     </div>

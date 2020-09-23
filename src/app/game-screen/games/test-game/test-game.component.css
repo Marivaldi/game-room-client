@@ -1,0 +1,50 @@
+.go-in-circles {
+    -webkit-animation: myOrbit 3s linear infinite;
+    /* Chrome, Safari 5 */
+    -moz-animation: myOrbit 3s linear infinite;
+    /* Firefox 5-15 */
+    -o-animation: myOrbit 3s linear infinite;
+    /* Opera 12+ */
+    animation: myOrbit 3s linear infinite;
+  }
+  
+  
+  @-webkit-keyframes myOrbit {
+    from {
+      -webkit-transform: rotate(0deg) translateX(150px) rotate(0deg);
+    }
+  
+    to {
+      -webkit-transform: rotate(360deg) translateX(150px) rotate(-360deg);
+    }
+  }
+  
+  @-moz-keyframes myOrbit {
+    from {
+      -moz-transform: rotate(0deg) translateX(150px) rotate(0deg);
+    }
+  
+    to {
+      -moz-transform: rotate(360deg) translateX(150px) rotate(-360deg);
+    }
+  }
+  
+  @-o-keyframes myOrbit {
+    from {
+      -o-transform: rotate(0deg) translateX(150px) rotate(0deg);
+    }
+  
+    to {
+      -o-transform: rotate(360deg) translateX(150px) rotate(-360deg);
+    }
+  }
+  
+  @keyframes myOrbit {
+    from {
+      transform: rotate(0deg) translateX(150px) rotate(0deg);
+    }
+  
+    to {
+      transform: rotate(360deg) translateX(150px) rotate(-360deg);
+    }
+  }

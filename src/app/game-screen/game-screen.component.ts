@@ -14,6 +14,9 @@ export class GameScreenComponent implements OnInit{
   activeGame: GameKey;
   aGameIsStarting: boolean = false;
   theGameHasStarted: boolean = false;
+  showGameOverScreen: boolean = false;
+  winners: string[] = [];
+  gameOverScreenTimeout;
   constructor(private router: Router, private route: ActivatedRoute, private gameSocket: GameSocketService) { }
 
   ngOnInit(): void {
@@ -26,6 +29,19 @@ export class GameScreenComponent implements OnInit{
     this.gameSocket.gameStarting$.subscribe((gameKey: GameKey) => {
       this.aGameIsStarting = true;
       this.activeGame = gameKey;
+      this.showGameOverScreen = false;
+    });
+
+    this.gameSocket.gameOver$.subscribe((winners: string[]) => {
+      this.winners = winners;
+      this.aGameIsStarting = false;
+      this.activeGame = null;
+      this.theGameHasStarted = false;
+      this.showGameOverScreen = true;
+      clearTimeout(this.gameOverScreenTimeout);
+      this.gameOverScreenTimeout = setTimeout(() => {
+        this.showGameOverScreen = false;
+      }, 5000);
     });
   }
 
@@ -36,5 +52,11 @@ export class GameScreenComponent implements OnInit{
   startTheGame() {
     this.aGameIsStarting = false;
     this.theGameHasStarted = true;
+    this.showGameOverScreen = false;
+  }
+
+  closeGameOverScreen() {
+    clearTimeout(this.gameOverScreenTimeout);
+    this.showGameOverScreen = false;
   }
 }

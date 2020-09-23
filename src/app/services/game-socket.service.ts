@@ -23,6 +23,7 @@ export class GameSocketService {
   userIsTyping$: Subject<any> = new Subject<any>();
   userStoppedTyping$: Subject<any> = new Subject<any>();
   updateGameVotes$: Subject<GameVote[]> = new Subject<GameVote[]>();
+  gameOver$: Subject<string[]> = new Subject<string[]>();
   heartbeatInterval;
   isLobbyHost: boolean = false;
 
@@ -83,7 +84,11 @@ export class GameSocketService {
       case "LOBBY_HOST":
         this.makeMeTheHost();
       case "UPDATE_GAME_VOTES" :
-        this.updateGameVotes$.next(message.votes as GameVote[])
+        this.updateGameVotes$.next(message.votes as GameVote[]);
+        break;
+      case "GAME_OVER" :
+        this.gameOver$.next(message.winners);
+        break;
       case "PONG":
       default:
         break;
