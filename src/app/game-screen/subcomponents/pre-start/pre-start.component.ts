@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { GameSocketService } from 'src/app/services/game-socket.service';
 
 @Component({
@@ -12,12 +12,12 @@ export class PreStartComponent implements OnInit {
   showCountdown: boolean = false;
   timeUntilGameStart: number = 10;
   waitingElipses: string = "";
+  @Output() startTheGame = new EventEmitter();
   constructor(private gameSocket: GameSocketService) { }
 
   ngOnInit(): void {
-    this.gameSocket.gameStart$.subscribe(() => this.startTimer());
-
-    this.startWaiting();
+    this.timeUntilGameStart = 10;
+    this.startTimer();
   }
 
   inTheRightLobby(lobbyId: string): boolean {
@@ -32,6 +32,7 @@ export class PreStartComponent implements OnInit {
         this.timeUntilGameStart--;
       } else {
         clearInterval(this.timerInterval);
+        this.startTheGame.emit();
       }
     },1000)
   }

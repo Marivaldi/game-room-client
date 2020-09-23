@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { webSocket, WebSocketSubject } from "rxjs/webSocket";
 import { environment } from 'src/environments/environment';
+import { GameKey } from '../models/enums/game-key';
 import { Game } from '../models/game';
 import { GameVote } from '../models/game-vote';
 
@@ -18,7 +19,7 @@ export class GameSocketService {
 
   lobbyJoined$: Subject<string> = new Subject<string>();
   lobbyChatRecieved$: Subject<ChatMessage> = new Subject<ChatMessage>();
-  gameStart$: Subject<any> = new Subject<any>();
+  gameStarting$: Subject<GameKey> = new Subject<GameKey>();
   userIsTyping$: Subject<any> = new Subject<any>();
   userStoppedTyping$: Subject<any> = new Subject<any>();
   updateGameVotes$: Subject<GameVote[]> = new Subject<GameVote[]>();
@@ -47,7 +48,6 @@ export class GameSocketService {
     console.log("Socket Connection Closed");
   }
 
-
   handleMessage = (message) => {
     if (!message || !message.type) { return; }
 
@@ -71,8 +71,8 @@ export class GameSocketService {
           isSystemInfo: this.isSystemInfo(message.level)
         });
         break;
-      case "GAME_START":
-        this.gameStart$.next();
+      case "GAME_STARTING":
+        this.gameStarting$.next(message.gameKey);
         break;
       case "USER_IS_TYPING":
         this.userIsTyping$.next();
@@ -147,7 +147,11 @@ export class GameSocketService {
   }
 
   voteFor(game: Game) {
-    this.socket$.next({type: "VOTE_FOR_GAME", lobbyId: this.lobbyId ,gameKey: game.key, connectionId: this.server_connnection_id});
+    this.socket$.next({type: "VOTE_FOR_GAME", lobbyId: this.lobbyId, gameKey: game.key, connectionId: this.server_connnection_id});
+  }
+
+  startGame(game: Game) {
+    this.socket$.next({type: "START_GAME", lobbyId: this.lobbyId, gameKey: game.key});
   }
 }
 

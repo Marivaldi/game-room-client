@@ -39,4 +39,8 @@ export class GamesListComponent implements OnInit {
     }
   }
 
+  startGame(game: Game) {
+    this.gameSocket.startGame(game);
+  }
+
 }
