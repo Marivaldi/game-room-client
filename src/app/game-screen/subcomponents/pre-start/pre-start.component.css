@@ -1,0 +1,9 @@
+.timer-wrapper {
+    display: inline-block;
+    margin: 0 0.5rem;
+    height:300px;
+    width: 300px;
+    border-radius: 500px;
+    animation: pulse infinite; /* referring directly to the animation's @keyframe declaration */
+    animation-duration: 1s; /* don't forget to set a duration! */
+  }

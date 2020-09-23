@@ -4,15 +4,7 @@
             <app-lobby-chat></app-lobby-chat>
         </div>
         <div class="col-9" style="max-height: 100vh; min-height: 100vh;">
-            <div class="container h-100">
-                <div class="row h-100 justify-content-center align-items-center">
-                    <div class="border-white border timer-wrapper ">
-                        <h4 *ngIf="!showCountdown" style="line-height: 300px; text-align: center;">Waiting for more
-                            players{{waitingElipses}}</h4>
-                        <h1 *ngIf="showCountdown" style="line-height: 300px; text-align: center;">{{timeUntilGameStart}}
-                        </h1>
-                    </div>
-                </div>
-            </div>
+            <app-pre-start></app-pre-start>
         </div>
     </div>
+</div>
