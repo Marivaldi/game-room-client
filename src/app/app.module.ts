@@ -7,6 +7,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { HomeComponent } from './home/home.component';
 import { GameScreenComponent } from './game-screen/game-screen.component';
 import { FormsModule } from '@angular/forms';
+import { GamesListComponent } from './game-screen/subcomponents/games-list/games-list.component';
 import { LobbyChatComponent } from './game-screen/subcomponents/lobby-chat/lobby-chat.component';
 
 @NgModule({
@@ -15,6 +16,7 @@ import { LobbyChatComponent } from './game-screen/subcomponents/lobby-chat/lobby
     PageNotFoundComponent,
     HomeComponent,
     GameScreenComponent,
+    GamesListComponent,
     LobbyChatComponent
   ],
   imports: [
