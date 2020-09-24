@@ -1,10 +1,41 @@
 <div class="container h-100">
     <div class="row h-100 justify-content-center align-items-center">
-        <div *ngIf="!youArePickingTheCategory && !someoneElseIsPickingTheCategory && !showQuestion">
+        <div *ngIf="!youArePickingTheCategory && !someoneElseIsPickingTheCategory && !showQuestion && !showResult">
             Welcome to the Trivia Game
         </div>
-        <div *ngIf="youArePickingTheCategory">
-            You are picking the category
+        <div *ngIf="youArePickingTheCategory" class="col-12">
+            <h3>Pick a Category</h3>
+            <div class="container-fluid pt-3 h-100">
+                <div class="row">
+                    <div class="col-4 pb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Books</h5>
+                                <p class="card-text font-italic">Are you a bookworm or do you at least know a fair amount about popular books?</p>
+                                <button class="btn btn-link card-link float-right" (click)="sendCategoryPicked(10)">Select</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 pb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Film</h5>
+                                <p class="card-text font-italic">Stay up late watching movies? Put it to use.</p>
+                                <button class="btn btn-link card-link float-right" (click)="sendCategoryPicked(11)">Select</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4 pb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Music</h5>
+                                <p class="card-text font-italic">Wooooaaahhhhh! Listen to the music!</p>
+                                <button class="btn btn-link card-link float-right" (click)="sendCategoryPicked(12)">Select</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div *ngIf="someoneElseIsPickingTheCategory">
             {{ categoryPicker }} is picking the category.
@@ -14,7 +45,23 @@
             <div *ngFor='let answer of answers;let i = index' class="form-check">
                 <input type="radio" class="form-check-input" [checked]="i === selectedAnswerIndex"
                     (change)='radioChecked(answer,i)' />
-                <h5 class="form-check-label pointer" [class.underline]="i === selectedAnswerIndex" (click)="radioChecked(answer, i)" [innerHTML]="answer"></h5>
+                <h5 class="form-check-label pointer" [class.underline]="i === selectedAnswerIndex"
+                    (click)="radioChecked(answer, i)" [innerHTML]="answer"></h5>
+            </div>
+            <div class="w-100 mt-5 pt-4 text-center">
+                <circle-progress [percent]="percentage" [outerStrokeColor]="'#f4f4f4'" [radius]="100"
+                    [innerStrokeColor]="'#535353'" [title]="timeLeftToAnswer" subtitle="You've got time. No sweat.">
+                </circle-progress>
+            </div>
+        </div>
+        <div *ngIf="showResult && !selectedAnswerIsCorrect()">
+            <h3 class="text-danger">That was the wrong answer!</h3>
+            <h5 class="in-left">The correct answer was <span class="underline" [innerHTML]="currentQuestion.correct_answer"></span></h5>
+        </div>
+        <div *ngIf="showResult && selectedAnswerIsCorrect()">
+            <h3 class="">That was the correct answer!</h3>
+            <div class="w-100 text-center">
+                <h4 class="text-success fly-in">+1 Point</h4>
             </div>
         </div>
     </div>

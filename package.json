@@ -26,6 +26,7 @@
     "bootstrap": "^4.5.2",
     "bootswatch": "^4.5.2",
     "jquery": "^3.5.1",
+    "ng-circle-progress": "^1.5.1",
     "npm-run-all": "^4.1.5",
     "rxjs": "~6.5.4",
     "shuffle-array": "^1.0.1",

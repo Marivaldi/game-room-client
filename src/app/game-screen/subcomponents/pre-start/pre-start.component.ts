@@ -28,7 +28,7 @@ export class PreStartComponent implements OnInit {
     clearInterval(this.waitingInterval);
     this.showCountdown = true;
     this.timerInterval = setInterval(() => {
-      if(this.timeUntilGameStart > 0) {
+      if(this.timeUntilGameStart > 1) {
         this.timeUntilGameStart--;
       } else {
         clearInterval(this.timerInterval);

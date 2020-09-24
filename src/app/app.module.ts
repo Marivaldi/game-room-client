@@ -13,6 +13,7 @@ import { PreStartComponent } from './game-screen/subcomponents/pre-start/pre-sta
 import { TestGameComponent } from './game-screen/games/test-game/test-game.component';
 import { GameOverComponent } from './game-screen/subcomponents/game-over/game-over.component';
 import { TriviaGameComponent } from './game-screen/games/trivia-game/trivia-game.component';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,27 @@ import { TriviaGameComponent } from './game-screen/games/trivia-game/trivia-game
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    NgCircleProgressModule.forRoot({
+      radius: 60,
+      space: -4,
+      outerStrokeGradient: false,
+      outerStrokeWidth: 4,
+      outerStrokeColor: "#4882c2",
+      outerStrokeGradientStopColor: "#53a9ff",
+      innerStrokeColor: "#e7e8ea",
+      innerStrokeWidth: 4,
+      titleColor: "#f4f4f4",
+      titleFontSize: "1.3em",
+      title: "UI",
+      animateTitle: false,
+      animationDuration: 1000,
+      showUnits: false,
+      showBackground: false,
+      clockwise: false,
+      startFromZero: false,
+      showSubtitle: false
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

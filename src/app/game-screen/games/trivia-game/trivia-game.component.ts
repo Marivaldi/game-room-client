@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GameKey } from 'src/app/models/enums/game-key';
 import { GameSocketService } from 'src/app/services/game-socket.service';
-import  shuffle from 'shuffle-array';
+import shuffle from 'shuffle-array';
 
 @Component({
   selector: 'app-trivia-game',
@@ -12,13 +12,21 @@ export class TriviaGameComponent implements OnInit {
   youArePickingTheCategory: boolean = false;
   someoneElseIsPickingTheCategory: boolean = false;
   showQuestion: boolean = false;
+  showResult: boolean = false;
   currentQuestion: TriviaQuestion;
   answers: string[] = [];
   selectedAnswerIndex: number = null;
   categoryPicker: string = "";
+  answerInterval;
+  resultTimeout;
+  timeLeftToAnswer: number = 20;
+  get percentage(): number {
+    return (this.timeLeftToAnswer / 20) * 100;
+  }
   constructor(private gameSocket: GameSocketService) { }
 
   ngOnInit(): void {
+    this.selectedAnswerIndex = null;
     this.gameSocket.gameActionReceived$.subscribe((gameMessage) => {
       if (!gameMessage || !gameMessage.type) return;
 
@@ -26,13 +34,17 @@ export class TriviaGameComponent implements OnInit {
         case TriviaGameMessageType.PICK_CATEGORY:
           this.youArePickingTheCategory = true;
           this.someoneElseIsPickingTheCategory = false;
+          this.showResult = false;
           break;
         case TriviaGameMessageType.WAIT_FOR_CATEGORY:
           this.youArePickingTheCategory = false;
           this.someoneElseIsPickingTheCategory = true;
+          this.showResult = false;
           this.categoryPicker = gameMessage.picker;
           break;
         case TriviaGameMessageType.SHOW_QUESTION:
+          this.timeLeftToAnswer = 20;
+          this.selectedAnswerIndex = null;
           this.handleShowQuestion(gameMessage);
           this.showQuestion = true;
           this.youArePickingTheCategory = false;
@@ -41,10 +53,6 @@ export class TriviaGameComponent implements OnInit {
     });
 
     this.gameSocket.pressPlay(GameKey.TRIVIA_GAME);
-
-    setTimeout(() => {
-      if(this.youArePickingTheCategory) this.sendCategoryPicked(10);
-    }, 5000)
   }
 
   sendCategoryPicked(category: number) {
@@ -60,22 +68,39 @@ export class TriviaGameComponent implements OnInit {
     });
   }
 
-  radioChecked(answers, i){
+  radioChecked(answers, i) {
     this.selectedAnswerIndex = i;
+  }
+
+  selectedAnswerIsCorrect(): boolean {
+    if (this.selectedAnswerIndex === null) return false;
+    const answer: string = this.answers[this.selectedAnswerIndex];
+    console.log(answer);
+    console.log(this.currentQuestion.correct_answer);
+    return answer === this.currentQuestion.correct_answer;
   }
 
   private handleShowQuestion(gameMessage) {
     const response: TriviaQuestionsReponse = gameMessage.triviaQuestion as TriviaQuestionsReponse;
     const triviaQuestion: TriviaQuestion = response.results[0];
     this.setCurrentQuestion(triviaQuestion);
-    setTimeout(() => {
-      this.sendAnswer();
-    }, 10000)
+    clearInterval(this.answerInterval);
+    this.answerInterval = setInterval(() => {
+      console.log(this.timeLeftToAnswer);
+      if (this.timeLeftToAnswer > 0) {
+        this.timeLeftToAnswer--;
+      } else {
+        this.showResult = true;
+        this.showQuestion = false;
+        clearInterval(this.answerInterval);
+        setTimeout(() => {
+          this.sendAnswer();
+        }, 5000)
+      }
+    }, 1000)
   }
 
   private sendAnswer() {
-    console.log("sending answer");
-    console.log("Correct? ", this.selectedAnswerIsCorrect());
     this.gameSocket.socket$.next({
       type: "GAME_ACTION",
       gameKey: GameKey.TEST_GAME,
@@ -89,14 +114,9 @@ export class TriviaGameComponent implements OnInit {
     });
   }
 
-  private selectedAnswerIsCorrect(): boolean {
-    const answer : string = this.answers[this.selectedAnswerIndex];
-    return answer === this.currentQuestion.correct_answer;
-  }
-
   private setCurrentQuestion(triviaQuestion: TriviaQuestion) {
     this.currentQuestion = triviaQuestion;
-    if(triviaQuestion.type === "boolean") {
+    if (triviaQuestion.type === "boolean") {
       this.answers = ["True", "False"];
       return;
     }
