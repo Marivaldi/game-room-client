@@ -12,6 +12,7 @@ import { LobbyChatComponent } from './game-screen/subcomponents/lobby-chat/lobby
 import { PreStartComponent } from './game-screen/subcomponents/pre-start/pre-start.component';
 import { TestGameComponent } from './game-screen/games/test-game/test-game.component';
 import { GameOverComponent } from './game-screen/subcomponents/game-over/game-over.component';
+import { TriviaGameComponent } from './game-screen/games/trivia-game/trivia-game.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { GameOverComponent } from './game-screen/subcomponents/game-over/game-ov
     LobbyChatComponent,
     PreStartComponent,
     TestGameComponent,
-    GameOverComponent
+    GameOverComponent,
+    TriviaGameComponent
   ],
   imports: [
     BrowserModule,

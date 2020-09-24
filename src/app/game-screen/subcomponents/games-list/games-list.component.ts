@@ -20,6 +20,7 @@ export class GamesListComponent implements OnInit {
 
   ngOnInit(): void {
     this.games.set(GameKey.TEST_GAME, {title: "Test Game", key: GameKey.TEST_GAME, subtitle: "1-5 Players", votes: 0, description: "A test of the games system. Whoever clicks the button the first wins."});
+    this.games.set(GameKey.TRIVIA_GAME, {title: "Trivia Game", key: GameKey.TRIVIA_GAME, subtitle: "1-5 Players", votes: 0, description: "A trivia game where each player gets a chance to pick the category."});
     this.gameSocket.updateGameVotes$.subscribe((votes: GameVote[]) => this.setGameVotes(votes))
   }
 

@@ -8,6 +8,7 @@
             <app-pre-start *ngIf="aGameIsStarting" (startTheGame)="startTheGame()"></app-pre-start>
             <app-game-over *ngIf="showGameOverScreen" [winners]="winners" (closeMe)="closeGameOverScreen()"></app-game-over>
             <app-test-game *ngIf="theGameHasStarted && activeGame === 'TEST_GAME'"></app-test-game>
+            <app-trivia-game *ngIf="theGameHasStarted && activeGame === 'TRIVIA_GAME'"></app-trivia-game>
         </div>
     </div>
 </div>

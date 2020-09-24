@@ -24,6 +24,7 @@ export class GameSocketService {
   userStoppedTyping$: Subject<any> = new Subject<any>();
   updateGameVotes$: Subject<GameVote[]> = new Subject<GameVote[]>();
   gameOver$: Subject<string[]> = new Subject<string[]>();
+  gameActionReceived$: Subject<any> = new Subject<any>();
   heartbeatInterval;
   isLobbyHost: boolean = false;
 
@@ -83,8 +84,12 @@ export class GameSocketService {
         break;
       case "LOBBY_HOST":
         this.makeMeTheHost();
+        break;
       case "UPDATE_GAME_VOTES" :
         this.updateGameVotes$.next(message.votes as GameVote[]);
+        break;
+      case "GAME_ACTION_FROM_SERVER":
+        this.gameActionReceived$.next(message.gameMessage);
         break;
       case "GAME_OVER" :
         this.gameOver$.next(message.winners);
@@ -157,6 +162,10 @@ export class GameSocketService {
 
   startGame(game: Game) {
     this.socket$.next({type: "START_GAME", lobbyId: this.lobbyId, gameKey: game.key});
+  }
+
+  pressPlay(gameKey: GameKey) {
+    this.socket$.next({type: "PLAY", lobbyId: this.lobbyId, gameKey: gameKey});
   }
 }
 

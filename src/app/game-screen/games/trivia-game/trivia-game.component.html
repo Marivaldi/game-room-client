@@ -1,0 +1,13 @@
+<div class="container h-100">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div *ngIf="!youArePickingTheCategory && !someoneElseIsPickingTheCategory">
+            Welcome to the Trivia Game
+        </div>
+        <div *ngIf="youArePickingTheCategory">
+            You are picking the category
+        </div>
+        <div *ngIf="someoneElseIsPickingTheCategory">
+            Someone else is picking the category
+        </div>
+    </div>
+</div>

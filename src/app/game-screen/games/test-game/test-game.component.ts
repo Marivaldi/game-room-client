@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GameKey } from 'src/app/models/enums/game-key';
+import { Game } from 'src/app/models/game';
 import { GameSocketService } from 'src/app/services/game-socket.service';
 
 @Component({
@@ -12,7 +13,7 @@ export class TestGameComponent implements OnInit {
   constructor(private gameSocket: GameSocketService) { }
 
   ngOnInit(): void {
-
+    this.gameSocket.pressPlay(GameKey.TRIVIA_GAME);
   }
 
   winTheGame() {
