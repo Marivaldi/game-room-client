@@ -1,13 +1,21 @@
 <div class="container h-100">
     <div class="row h-100 justify-content-center align-items-center">
-        <div *ngIf="!youArePickingTheCategory && !someoneElseIsPickingTheCategory">
+        <div *ngIf="!youArePickingTheCategory && !someoneElseIsPickingTheCategory && !showQuestion">
             Welcome to the Trivia Game
         </div>
         <div *ngIf="youArePickingTheCategory">
             You are picking the category
         </div>
         <div *ngIf="someoneElseIsPickingTheCategory">
-            Someone else is picking the category
+            {{ categoryPicker }} is picking the category.
+        </div>
+        <div *ngIf="showQuestion">
+            <h4 [innerHTML]="currentQuestion.question"></h4>
+            <div *ngFor='let answer of answers;let i = index' class="form-check">
+                <input type="radio" class="form-check-input" [checked]="i === selectedAnswerIndex"
+                    (change)='radioChecked(answer,i)' />
+                <h5 class="form-check-label pointer" [class.underline]="i === selectedAnswerIndex" (click)="radioChecked(answer, i)" [innerHTML]="answer"></h5>
+            </div>
         </div>
     </div>
 </div>

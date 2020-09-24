@@ -101,6 +101,7 @@ export class GameSocketService {
   }
 
   startHeartbeat() {
+    clearInterval(this.heartbeatInterval);
     this.heartbeatInterval = setInterval(() => this.sendPing(), environment.socketHeartbeatInterval)
   }
 
