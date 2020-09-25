@@ -10,7 +10,6 @@ export class DiscordService {
   constructor(private httpClient: HttpClient) { }
 
   sendSuggestion(suggestion: string) {
-    console.log("Sending Suggestion...");
     const suggestionMessage = {
       username: "Site Suggestions",
       content: suggestion,
