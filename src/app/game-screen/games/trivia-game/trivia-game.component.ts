@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { GameKey } from 'src/app/models/enums/game-key';
 import { GameSocketService } from 'src/app/services/game-socket.service';
 import shuffle from 'shuffle-array';
+import { TriviaService } from 'src/app/services/trivia.service';
+import { TriviaCategoryResponse } from 'src/app/models/trivia-category-response';
+import { TriviaCategory } from 'src/app/models/trivia-category';
 
 @Component({
   selector: 'app-trivia-game',
@@ -20,12 +23,18 @@ export class TriviaGameComponent implements OnInit {
   answerInterval;
   resultTimeout;
   timeLeftToAnswer: number = 20;
+  triviaCategories: TriviaCategory[] = [];
   get percentage(): number {
     return (this.timeLeftToAnswer / 20) * 100;
   }
-  constructor(private gameSocket: GameSocketService) { }
+  constructor(private gameSocket: GameSocketService, private triviaService: TriviaService) { }
 
   ngOnInit(): void {
+    this.triviaService.getCategories().subscribe((response: TriviaCategoryResponse) => {
+      this.triviaCategories = response.trivia_categories;
+    });
+
+
     this.selectedAnswerIndex = null;
     this.gameSocket.gameActionReceived$.subscribe((gameMessage) => {
       if (!gameMessage || !gameMessage.type) return;

@@ -6,7 +6,7 @@
                     <span *ngIf="game.value.votes > 0" class="float-right badge badge-pill badge-light">{{game.value.votes}}</span>
                     <h5 class="card-title">{{ game.value.title }} </h5>
                     <h6 class="card-subtitle mb-2 text-muted">{{ game.value.subtitle }}</h6>
-                    <p class="card-text">{{ game.value.description }}</p>
+                    <p class="card-text" [innerHTML]="game.value.description"></p>
                     <button *ngIf="isLobbyHost" class="btn btn-link card-link float-right" (click)="startGame(game.value)">Play</button>
                     <button class="btn btn-link card-link text-info float-right" (click)="voteFor(game.value)">Vote</button>
                 </div>

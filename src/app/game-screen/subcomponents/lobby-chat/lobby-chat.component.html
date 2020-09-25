@@ -2,7 +2,7 @@
     <div class="row align-content-end bg-white" style="max-height: 82vh; min-height: 82vh; height: 83vh;">
         <div class="col-12 px-0">
             <div class="session-textchat">
-                <div #chatWindow class="past-messages px-1 pb-1">
+                <div #chatWindow class="past-messages px-1 pb-1 cool-scrollbar">
                     <div *ngFor="let message of messageFeed" class="px-3 py-2"
                         [class.receiver]="!message.is_from_me && !message.is_system_message"
                         [class.sender]="message.is_from_me" [class.system]="message.is_system_message"

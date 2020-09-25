@@ -14,6 +14,7 @@ import { TestGameComponent } from './game-screen/games/test-game/test-game.compo
 import { GameOverComponent } from './game-screen/subcomponents/game-over/game-over.component';
 import { TriviaGameComponent } from './game-screen/games/trivia-game/trivia-game.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
+import {HttpClientModule} from '@angular/common/http'
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    HttpClientModule,
     NgCircleProgressModule.forRoot({
       radius: 60,
       space: -4,

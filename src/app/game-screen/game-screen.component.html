@@ -3,7 +3,7 @@
         <div class="col-3 px-0">
             <app-lobby-chat></app-lobby-chat>
         </div>
-        <div class="col-9" style="max-height: 100vh; min-height: 100vh;">
+        <div class="col-9 overflow-auto cool-scrollbar" style="max-height: 100vh; min-height: 100vh;">
             <app-games-list *ngIf="!aGameIsStarting && !theGameHasStarted && !showGameOverScreen"></app-games-list>
             <app-pre-start *ngIf="aGameIsStarting" (startTheGame)="startTheGame()"></app-pre-start>
             <app-game-over *ngIf="showGameOverScreen" [winners]="winners" (closeMe)="closeGameOverScreen()"></app-game-over>

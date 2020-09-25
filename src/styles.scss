@@ -1,3 +1,22 @@
 @import "../node_modules/bootswatch/dist/darkly/variables";
 @import "../node_modules/bootstrap/scss/bootstrap";
 @import "../node_modules/bootswatch/dist/darkly/bootswatch";
+
+.cool-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  /* width of the entire scrollbar */
+}
+
+.cool-scrollbar::-webkit-scrollbar-track {
+  background: #dddbdb;
+  /* color of the tracking area */
+}
+
+.cool-scrollbar::-webkit-scrollbar-thumb {
+  background-color: black;
+  /* color of the scroll thumb */
+  border-radius: 20px;
+  /* roundness of the scroll thumb */
+  border: 3px solid rgb(29, 29, 29);
+  /* creates padding around scroll thumb */
+}

@@ -7,30 +7,11 @@
             <h3>Pick a Category</h3>
             <div class="container-fluid pt-3 h-100">
                 <div class="row">
-                    <div class="col-4 pb-4">
+                    <div class="col-4 pb-4" *ngFor="let category of triviaCategories">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title">Books</h5>
-                                <p class="card-text font-italic">Are you a bookworm or do you at least know a fair amount about popular books?</p>
-                                <button class="btn btn-link card-link float-right" (click)="sendCategoryPicked(10)">Select</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4 pb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Film</h5>
-                                <p class="card-text font-italic">Stay up late watching movies? Put it to use.</p>
-                                <button class="btn btn-link card-link float-right" (click)="sendCategoryPicked(11)">Select</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4 pb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Music</h5>
-                                <p class="card-text font-italic">Wooooaaahhhhh! Listen to the music!</p>
-                                <button class="btn btn-link card-link float-right" (click)="sendCategoryPicked(12)">Select</button>
+                                <h5 class="card-title">{{ category.name }}</h5>
+                                <button class="btn btn-link card-link float-right" (click)="sendCategoryPicked(category.id)">Select</button>
                             </div>
                         </div>
                     </div>

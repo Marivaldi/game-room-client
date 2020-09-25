@@ -10,13 +10,13 @@ export class PreStartComponent implements OnInit {
   timerInterval;
   waitingInterval;
   showCountdown: boolean = false;
-  timeUntilGameStart: number = 10;
+  timeUntilGameStart: number = 5;
   waitingElipses: string = "";
   @Output() startTheGame = new EventEmitter();
   constructor(private gameSocket: GameSocketService) { }
 
   ngOnInit(): void {
-    this.timeUntilGameStart = 10;
+    this.timeUntilGameStart = 5;
     this.startTimer();
   }
 
@@ -34,7 +34,7 @@ export class PreStartComponent implements OnInit {
         clearInterval(this.timerInterval);
         this.startTheGame.emit();
       }
-    },1000)
+    }, 1000)
   }
 
   startWaiting() {
