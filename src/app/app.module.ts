@@ -1,5 +1,5 @@
 import { BrowserModule, HammerGestureConfig, HammerModule, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { Injectable, NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,10 +16,9 @@ import { TriviaGameComponent } from './game-screen/games/trivia-game/trivia-game
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import {HttpClientModule} from '@angular/common/http'
 
+@Injectable()
 class HammerConfig extends HammerGestureConfig {
   overrides = <any> {
-      // I will only use the swap gesture so 
-      // I will deactivate the others to avoid overlaps
       'pinch': { enable: false },
       'rotate': { enable: false }
   }
