@@ -75,8 +75,6 @@ export class TriviaGameComponent implements OnInit {
   selectedAnswerIsCorrect(): boolean {
     if (this.selectedAnswerIndex === null) return false;
     const answer: string = this.answers[this.selectedAnswerIndex];
-    console.log(answer);
-    console.log(this.currentQuestion.correct_answer);
     return answer === this.currentQuestion.correct_answer;
   }
 
@@ -86,7 +84,6 @@ export class TriviaGameComponent implements OnInit {
     this.setCurrentQuestion(triviaQuestion);
     clearInterval(this.answerInterval);
     this.answerInterval = setInterval(() => {
-      console.log(this.timeLeftToAnswer);
       if (this.timeLeftToAnswer > 0) {
         this.timeLeftToAnswer--;
       } else {
