@@ -1,7 +1,7 @@
 <div class="container h-100">
     <div class="row h-100 justify-content-center align-items-center">
         <div>
-            <h1>{{ (winners.length > 1) ? 'Winners!' : 'Winner!'}}</h1>
+            <h1>{{ (winners.length > 1) ? 'Ended in a tie...' : 'We have winner!'}}</h1>
             <h3 *ngFor="let winner of winners" class="font-italic">{{ winner }}</h3>
             <button class="btn btn-lg btn-danger mt-4" (click)="closeMe.emit()">Back to Game Selection</button>
         </div>
