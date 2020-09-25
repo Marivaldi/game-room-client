@@ -2,6 +2,11 @@
 
 name: Build & Deploy to S3
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
+on:
+  workflow_dispatch:
+
+
 jobs:
   # This workflow contains a single job called "greet"
   build-and-deploy:
