@@ -16,6 +16,7 @@ export class GameScreenComponent implements OnInit{
   theGameHasStarted: boolean = false;
   showGameOverScreen: boolean = false;
   winners: string[] = [];
+  showChat: boolean = false;
   gameOverScreenTimeout;
   constructor(private router: Router, private route: ActivatedRoute, private gameSocket: GameSocketService) { }
 
@@ -43,6 +44,14 @@ export class GameScreenComponent implements OnInit{
         this.showGameOverScreen = false;
       }, 5000);
     });
+  }
+
+  onSwipeRight() {
+    this.showChat = true;
+  }
+
+  closeChat() {
+    this.showChat= false;
   }
 
   inTheRightLobby(lobbyId: string): boolean {

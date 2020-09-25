@@ -1,0 +1,22 @@
+@media (max-width: 575.98px) { 
+    .out-right {
+        animation: slideOutRight;
+        animation-duration: 1s;
+      }
+
+      .in-left {
+        animation: slideInLeft;
+        animation-duration: 1s;
+      }
+
+      .in-right {
+        animation: slideInRight;
+        animation-duration: 1s;
+      }
+
+      .out-left {
+        animation: slideOutLeft;
+        animation-duration: 1s;
+      }
+}
+

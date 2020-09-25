@@ -1,8 +1,8 @@
 <div class="container-fluid overflow-auto">
-    <div class="row align-content-end bg-white" style="max-height: 82vh; min-height: 82vh; height: 83vh;">
+    <div class="row align-content-end bg-white" style="max-height: 82vh; min-height: 82vh; height: 83vh;" >
         <div class="col-12 px-0">
             <div class="session-textchat">
-                <div #chatWindow class="past-messages px-1 pb-1 cool-scrollbar">
+                <div #chatWindow class="past-messages px-1 pb-1 cool-scrollbar" (swipeleft)="swipedLeft.emit()">
                     <div *ngFor="let message of messageFeed" class="px-3 py-2"
                         [class.receiver]="!message.is_from_me && !message.is_system_message"
                         [class.sender]="message.is_from_me" [class.system]="message.is_system_message"
@@ -21,13 +21,13 @@
             </div>
         </div>
     </div>
-    <div class="row align-content-end border-white border-top" style="max-height: 18vh; min-height: 18vh;">
+    <div class="row border-white border-top px-sm-0 px-2" style="max-height: 18vh; min-height: 18vh;">
         <div class="col-12 py-2 px-0">
             <form #chatForm="ngForm">
                 <div class="input-group">
                     <textarea (keydown)="keyDownFunction($event)" (keyup)="keyUpFunction($event)"
                         name="chatMessage" [ngModel]="chatMessage"
-                        (ngModelChange)="updateChatMessage($event)" rows="4" class="form-control"
+                        (ngModelChange)="updateChatMessage($event)" class="form-control"
                         style="resize: none;" required maxlength="275"></textarea>
 
                 </div>

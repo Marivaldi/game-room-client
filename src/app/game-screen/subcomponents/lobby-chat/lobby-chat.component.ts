@@ -1,4 +1,4 @@
-import { AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, EventEmitter, AfterViewInit, Component, ElementRef, OnInit, Output, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { GameSocketService } from 'src/app/services/game-socket.service';
@@ -17,6 +17,7 @@ export class LobbyChatComponent implements OnInit, AfterViewChecked, AfterViewIn
   previousChatScrollHeight;
   @ViewChild('chatWindow') private chatWindow: ElementRef;
   @ViewChild('chatForm') private chatForm: NgForm;
+  @Output() swipedLeft: EventEmitter<any> = new EventEmitter();
 
   constructor(private gameSocket: GameSocketService) { }
   ngAfterViewInit(): void {

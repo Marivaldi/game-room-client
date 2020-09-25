@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HammerGestureConfig, HammerModule, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -15,6 +15,15 @@ import { GameOverComponent } from './game-screen/subcomponents/game-over/game-ov
 import { TriviaGameComponent } from './game-screen/games/trivia-game/trivia-game.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import {HttpClientModule} from '@angular/common/http'
+
+class HammerConfig extends HammerGestureConfig {
+  overrides = <any> {
+      // I will only use the swap gesture so 
+      // I will deactivate the others to avoid overlaps
+      'pinch': { enable: false },
+      'rotate': { enable: false }
+  }
+}
 
 @NgModule({
   declarations: [
@@ -34,6 +43,7 @@ import {HttpClientModule} from '@angular/common/http'
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
+    HammerModule,
     NgCircleProgressModule.forRoot({
       radius: 60,
       space: -4,
@@ -55,7 +65,10 @@ import {HttpClientModule} from '@angular/common/http'
       showSubtitle: false
     })
   ],
-  providers: [],
+  providers: [{
+    provide: HAMMER_GESTURE_CONFIG,
+    useClass: HammerConfig
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
