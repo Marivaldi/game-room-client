@@ -1,9 +1,9 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-3 px-0">
+        <div class="col-3 d-sm-block d-none hide-mobile px-0">
             <app-lobby-chat></app-lobby-chat>
         </div>
-        <div class="col-9 overflow-auto cool-scrollbar" style="max-height: 100vh; min-height: 100vh;">
+        <div class="col-sm-9 col-12 overflow-auto cool-scrollbar" style="max-height: 100vh; min-height: 100vh;">
             <app-games-list *ngIf="!aGameIsStarting && !theGameHasStarted && !showGameOverScreen"></app-games-list>
             <app-pre-start *ngIf="aGameIsStarting" (startTheGame)="startTheGame()"></app-pre-start>
             <app-game-over *ngIf="showGameOverScreen" [winners]="winners" (closeMe)="closeGameOverScreen()"></app-game-over>
