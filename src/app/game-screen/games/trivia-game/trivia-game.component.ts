@@ -16,6 +16,7 @@ export class TriviaGameComponent implements OnInit {
   someoneElseIsPickingTheCategory: boolean = false;
   showQuestion: boolean = false;
   showResult: boolean = false;
+  showFinalStandings: boolean = false;
   currentQuestion: TriviaQuestion;
   answers: string[] = [];
   selectedAnswerIndex: number = null;
@@ -24,6 +25,7 @@ export class TriviaGameComponent implements OnInit {
   resultTimeout;
   timeLeftToAnswer: number = 20;
   triviaCategories: TriviaCategory[] = [];
+  finalStandings: any[] = [];
   get percentage(): number {
     return (this.timeLeftToAnswer / 20) * 100;
   }
@@ -44,20 +46,33 @@ export class TriviaGameComponent implements OnInit {
           this.youArePickingTheCategory = true;
           this.someoneElseIsPickingTheCategory = false;
           this.showResult = false;
+          this.showFinalStandings = false;
           break;
         case TriviaGameMessageType.WAIT_FOR_CATEGORY:
+          this.showFinalStandings = false;
           this.youArePickingTheCategory = false;
           this.someoneElseIsPickingTheCategory = true;
           this.showResult = false;
           this.categoryPicker = gameMessage.picker;
           break;
         case TriviaGameMessageType.SHOW_QUESTION:
+          this.showFinalStandings = false;
           this.timeLeftToAnswer = 20;
           this.selectedAnswerIndex = null;
           this.handleShowQuestion(gameMessage);
           this.showQuestion = true;
           this.youArePickingTheCategory = false;
           this.someoneElseIsPickingTheCategory = false;
+          break;
+        case TriviaGameMessageType.FINAL_STANDINGS:
+          this.showQuestion = false
+          this.youArePickingTheCategory = false;
+          this.someoneElseIsPickingTheCategory = false;
+          this.showResult = false;
+          this.showFinalStandings = true;
+          this.finalStandings = gameMessage.standings;
+          setTimeout(() => { this.endGame(); }, 5000);
+          break;
       }
     });
 
@@ -73,6 +88,18 @@ export class TriviaGameComponent implements OnInit {
       gameMessage: {
         type: TriviaGameMessageType.CATEGORY_PICKED,
         category: category
+      }
+    });
+  }
+
+  endGame() {
+    this.gameSocket.socket$.next({
+      type: "GAME_ACTION",
+      gameKey: GameKey.TEST_GAME,
+      lobbyId: this.gameSocket.lobbyId,
+      connectionId: this.gameSocket.server_connnection_id,
+      gameMessage: {
+        type: TriviaGameMessageType.END_GAME
       }
     });
   }
@@ -139,7 +166,9 @@ enum TriviaGameMessageType {
   WAIT_FOR_CATEGORY = "WAIT_FOR_CATEGORY",
   CATEGORY_PICKED = "CATEGORY_PICKED",
   SHOW_QUESTION = "SHOW_QUESTION",
-  ANSWER_QUESTION = "ANSWER_QUESTION"
+  ANSWER_QUESTION = "ANSWER_QUESTION",
+  FINAL_STANDINGS = "FINAL_STANDINGS",
+  END_GAME = "END_GAME"
 }
 
 class TriviaQuestionsReponse {

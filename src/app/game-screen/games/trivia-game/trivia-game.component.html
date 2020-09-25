@@ -1,6 +1,6 @@
 <div class="container h-100">
     <div class="row h-100 justify-content-center align-items-center">
-        <div *ngIf="!youArePickingTheCategory && !someoneElseIsPickingTheCategory && !showQuestion && !showResult">
+        <div *ngIf="!youArePickingTheCategory && !someoneElseIsPickingTheCategory && !showQuestion && !showResult && !showFinalStandings">
             Welcome to the Trivia Game
         </div>
         <div *ngIf="youArePickingTheCategory" class="col-12">
@@ -11,7 +11,8 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">{{ category.name }}</h5>
-                                <button class="btn btn-link card-link float-right" (click)="sendCategoryPicked(category.id)">Select</button>
+                                <button class="btn btn-link card-link float-right"
+                                    (click)="sendCategoryPicked(category.id)">Select</button>
                             </div>
                         </div>
                     </div>
@@ -37,12 +38,39 @@
         </div>
         <div *ngIf="showResult && !selectedAnswerIsCorrect()">
             <h3 class="text-danger">That was the wrong answer!</h3>
-            <h5 class="in-left">The correct answer was <span class="underline" [innerHTML]="currentQuestion.correct_answer"></span></h5>
+            <h5 class="in-left">The correct answer was <span class="underline"
+                    [innerHTML]="currentQuestion.correct_answer"></span></h5>
         </div>
         <div *ngIf="showResult && selectedAnswerIsCorrect()">
             <h3 class="">That was the correct answer!</h3>
             <div class="w-100 text-center">
                 <h4 class="text-success fly-in">+1 Point</h4>
+            </div>
+        </div>
+        <div *ngIf="showFinalStandings" class="w-100">
+            <div class="container-fluid">
+                <div class="row border-bottom border-white">
+                    <div class="col-6">
+                        <h4>Player</h4>
+                    </div>
+                    <div class="col-3 px-3 text-center">
+                       <h4 class="text-success">Correct</h4>
+                    </div>
+                    <div class="col-3 px-3 text-center">
+                        <h4 class="text-danger">Wrong</h4>
+                    </div>
+                </div>
+                <div class="row" *ngFor="let standing of finalStandings">
+                    <div class="col-6">
+                        <h5>{{standing.player}}</h5>
+                    </div>
+                    <div class="col-3 px-3 text-center">
+                        <h5 class="text-success">{{standing.correctAnswers}}</h5>
+                    </div>
+                    <div class="col-3 px-3 text-center">
+                        <h5 class="text-danger">{{standing.incorrectAnswers}}</h5>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
