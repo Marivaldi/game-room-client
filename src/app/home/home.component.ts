@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NavigationStart, Router } from '@angular/router';
-import { webSocket, WebSocketSubject } from "rxjs/webSocket";
+import { Router } from '@angular/router';
+import { DiscordService } from '../services/discord.service';
 import { GameSocketService } from '../services/game-socket.service';
 
 @Component({
