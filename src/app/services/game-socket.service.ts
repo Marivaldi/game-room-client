@@ -131,6 +131,10 @@ export class GameSocketService {
     this.socket$.next({ type: "JOIN_RANDOM_LOBBY", username: username, connectionId: this.server_connnection_id });
   }
 
+  joinLobby(username: string, lobbyId: string) {
+    this.socket$.next({ type: "JOIN_LOBBY", username: username, connectionId: this.server_connnection_id, lobbyId: lobbyId });
+  }
+
   createAndJoinPrivateLobby(username: string) {
     this.socket$.next({ type: "CREATE_PRIVATE_LOBBY", username: username, connectionId: this.server_connnection_id });
   }

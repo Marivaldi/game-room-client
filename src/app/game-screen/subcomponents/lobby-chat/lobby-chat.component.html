@@ -1,18 +1,20 @@
 <div class="container-fluid overflow-auto">
-    <div class="row align-content-end bg-white" style="max-height: 82vh; min-height: 82vh; height: 83vh;" >
+    <div class="row align-content-end bg-white" style="max-height: 82vh; min-height: 82vh; height: 83vh;">
         <div class="col-12 px-0">
             <div class="session-textchat">
                 <div #chatWindow class="past-messages px-1 pb-1 cool-scrollbar" (swipeleft)="swipedLeft.emit()">
                     <div *ngFor="let message of messageFeed" class="px-3 py-2"
                         [class.receiver]="!message.is_from_me && !message.is_system_message"
                         [class.sender]="message.is_from_me" [class.system]="message.is_system_message"
-                        [class.text-black-50]="message.isSystemInfo"
-                        [class.text-danger]="message.isSystemDanger"
+                        [class.text-black-50]="message.isSystemInfo" [class.text-danger]="message.isSystemDanger"
                         [class.text-success]="message.isSystemSuccess">
                         <h5 class="mb-1 font-weight-bold"> {{(message.is_from_me) ? "You" : message.sender}} </h5>
                         <span class="message p-0 font-italic">
                             {{message.message}}
                         </span>
+                    </div>
+                    <div class="w-100 text-center">
+                        <button class="btn btn-link text-info" (click)="copyJoinLink()">Copy Join Link</button>
                     </div>
                     <span *ngIf="someoneIsTyping" class="text-secondary font-italic"> <img
                             src="../../assets/loading-elipsis.gif" style="max-height: 30px;" /> Someone is
@@ -25,11 +27,9 @@
         <div class="col-12 py-2 px-0">
             <form #chatForm="ngForm">
                 <div class="input-group">
-                    <textarea (keydown)="keyDownFunction($event)" (keyup)="keyUpFunction($event)"
-                        name="chatMessage" [ngModel]="chatMessage"
-                        (ngModelChange)="updateChatMessage($event)" class="form-control"
+                    <textarea (keydown)="keyDownFunction($event)" (keyup)="keyUpFunction($event)" name="chatMessage"
+                        [ngModel]="chatMessage" (ngModelChange)="updateChatMessage($event)" class="form-control"
                         style="resize: none;" required maxlength="275"></textarea>
-
                 </div>
                 <button class="btn btn-success mt-2 w-100" type="button" (click)="sendChatMessage()"
                     [disabled]="chatForm.invalid">Send</button>

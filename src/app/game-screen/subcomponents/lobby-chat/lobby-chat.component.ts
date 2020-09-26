@@ -1,4 +1,4 @@
-import { AfterViewChecked, EventEmitter, AfterViewInit, Component, ElementRef, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewChecked, EventEmitter, AfterViewInit, Component, ElementRef, OnInit, Output, ViewChild, Input } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { GameSocketService } from 'src/app/services/game-socket.service';
@@ -17,6 +17,7 @@ export class LobbyChatComponent implements OnInit, AfterViewChecked, AfterViewIn
   previousChatScrollHeight;
   @ViewChild('chatWindow') private chatWindow: ElementRef;
   @ViewChild('chatForm') private chatForm: NgForm;
+  @Input() joinLink: string = "";
   @Output() swipedLeft: EventEmitter<any> = new EventEmitter();
 
   constructor(private gameSocket: GameSocketService) { }
@@ -103,4 +104,19 @@ export class LobbyChatComponent implements OnInit, AfterViewChecked, AfterViewIn
       this.alreadySentTypingMessage = false;
     }, 1000);
   }
+
+  copyJoinLink(){
+    const selBox = document.createElement('textarea');
+    selBox.style.position = 'fixed';
+    selBox.style.left = '0';
+    selBox.style.top = '0';
+    selBox.style.opacity = '0';
+    selBox.value = this.joinLink;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand('copy');
+    document.body.removeChild(selBox);
+  }
+
 }

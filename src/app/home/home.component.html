@@ -21,6 +21,7 @@
                         </div>
                         <button type="button" class="btn btn-outline-warning mb-5 mt-3 w-100" (click)="createPrivateLobby()" [disabled]="usernameForm.invalid">Create a Private Lobby</button>
                         <button type="button" class="btn btn-success w-100" (click)="joinRandomLobby()" [disabled]="usernameForm.invalid">Free Play</button>
+                        <div class="float-right font-italic text-muted mt-5">Have a friend's Lobby ID? <br><a [routerLink]="'/join'">Join their lobby.</a></div>
                     </form>
                 </div>
             </div>

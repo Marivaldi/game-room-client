@@ -18,6 +18,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
   showGameOverScreen: boolean = false;
   winners: string[] = [];
   showChat: boolean = false;
+  joinLink: string = "";
   gameOverScreenTimeout;
   constructor(private router: Router, private route: ActivatedRoute, private gameSocket: GameSocketService) { }
   private routeSub: any;  // subscription to route observer
@@ -25,6 +26,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.lobby_id = params['id'];
+      this.joinLink = `${location.origin}/join/${this.lobby_id}`;
       const inTheRightLobby = this.inTheRightLobby(this.lobby_id);
       if (!inTheRightLobby) this.router.navigate(['/']);
     });
