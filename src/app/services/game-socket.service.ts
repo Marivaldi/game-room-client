@@ -182,6 +182,7 @@ export class GameSocketService {
   leaveLobby() {
     this.socket$.next({ type: "LEAVE_LOBBY", connectionId: this.server_connnection_id });
     this.lobbyId = "";
+    this.isLobbyHost = false;
   }
 }
 
