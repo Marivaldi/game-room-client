@@ -12,7 +12,7 @@ import { GameSocketService } from '../services/game-socket.service';
 export class HomeComponent implements OnInit {
   username: string = "";
 
-  constructor(private router: Router, private gameSocket: GameSocketService) {}
+  constructor(private router: Router, private gameSocket: GameSocketService) { }
 
   ngOnInit(): void {
     this.gameSocket.lobbyJoined$.subscribe((lobby_id: string) => this.goToLobby(lobby_id));
@@ -22,6 +22,13 @@ export class HomeComponent implements OnInit {
     if (this.gameSocket.isDisconnected()) { return; }
 
     this.gameSocket.joinRandomLobby(this.username);
+    this.username = "";
+  }
+
+  createPrivateLobby() {
+    if (this.gameSocket.isDisconnected()) { return; }
+
+    this.gameSocket.createAndJoinPrivateLobby(this.username);
     this.username = "";
   }
 
