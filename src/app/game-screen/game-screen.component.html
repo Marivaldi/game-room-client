@@ -9,6 +9,7 @@
             <app-game-over *ngIf="showGameOverScreen" [winners]="winners" (closeMe)="closeGameOverScreen()"></app-game-over>
             <app-test-game *ngIf="theGameHasStarted && activeGame === 'TEST_GAME'"></app-test-game>
             <app-trivia-game *ngIf="theGameHasStarted && activeGame === 'TRIVIA_GAME'"></app-trivia-game>
+            <app-phaser-game *ngIf="theGameHasStarted && activeGame === 'PHASER_GAME'"></app-phaser-game>
         </div>
     </div>
 </div>
