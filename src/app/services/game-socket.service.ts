@@ -178,6 +178,11 @@ export class GameSocketService {
   pressPlay(gameKey: GameKey) {
     this.socket$.next({type: "PLAY", lobbyId: this.lobbyId, gameKey: gameKey});
   }
+
+  leaveLobby() {
+    this.socket$.next({ type: "LEAVE_LOBBY", connectionId: this.server_connnection_id });
+    this.lobbyId = "";
+  }
 }
 
 class ChatMessage {
