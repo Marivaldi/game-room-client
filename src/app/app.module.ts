@@ -14,7 +14,8 @@ import { TestGameComponent } from './game-screen/games/test-game/test-game.compo
 import { GameOverComponent } from './game-screen/subcomponents/game-over/game-over.component';
 import { TriviaGameComponent } from './game-screen/games/trivia-game/trivia-game.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import {HttpClientModule} from '@angular/common/http'
+import {HttpClientModule} from '@angular/common/http';
+import { PhaserGameComponent } from './game-screen/games/phaser-game/phaser-game.component'
 
 @Injectable()
 class HammerConfig extends HammerGestureConfig {
@@ -35,7 +36,8 @@ class HammerConfig extends HammerGestureConfig {
     PreStartComponent,
     TestGameComponent,
     GameOverComponent,
-    TriviaGameComponent
+    TriviaGameComponent,
+    PhaserGameComponent
   ],
   imports: [
     BrowserModule,
