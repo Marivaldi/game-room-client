@@ -25,6 +25,7 @@ export class GameSocketService {
   updateGameVotes$: Subject<GameVote[]> = new Subject<GameVote[]>();
   gameOver$: Subject<string[]> = new Subject<string[]>();
   gameActionReceived$: Subject<any> = new Subject<any>();
+  failedConnectionAttempts: number = 0;
   heartbeatInterval;
   isLobbyHost: boolean = false;
 
@@ -42,7 +43,12 @@ export class GameSocketService {
   }
 
   showErrorAndReconnect = (err) => {
-    console.log("ERROR: ", err);
+    console.log("CONNECTION ERROR: ", err);
+    if(this.failedConnectionAttempts >= 3) {
+      console.log("Maximum reconnect attempts exceeded. Backing off...");
+      return;
+    }
+    this.failedConnectionAttempts++;
     this.connectToSocketServer();
   }
 
