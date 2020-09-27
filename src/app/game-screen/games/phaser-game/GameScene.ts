@@ -27,7 +27,8 @@ export class GameScene extends Phaser.Scene {
             } else {
                 this.addOtherPlayers(playerPosition);
             }
-        })
+        });
+        this.map.createStaticLayer("Above Player", this.tileset, 0, 0);
     }
 
     public preload() {
@@ -80,6 +81,7 @@ export class GameScene extends Phaser.Scene {
         });
 
         this.gameSocket.gameActionReceived$.subscribe((gameMessage) => {
+            if(!this.otherPlayers) { this.otherPlayers = this.physics.add.group(); }
             if (!gameMessage || !gameMessage.type) return;
 
             switch (gameMessage.type) {
@@ -94,10 +96,18 @@ export class GameScene extends Phaser.Scene {
             }
         });
 
-
-
-        this.otherPlayers = this.physics.add.group();
         this.gameSocket.pressPlay(GameKey.PHASER_GAME);
+
+        this.gameSocket.socket$.next({
+            type: "GAME_ACTION",
+            gameKey: GameKey.PHASER_GAME,
+            lobbyId: this.gameSocket.lobbyId,
+            connectionId: this.gameSocket.server_connnection_id,
+            gameMessage: {
+                type: "GET_PLAYERS",
+                connectionId: this.gameSocket.server_connnection_id
+            }
+        });
     }
 
     handleOtherPlayerMoved(gameMessage) {
@@ -109,6 +119,7 @@ export class GameScene extends Phaser.Scene {
                 const thePlayerIsMovingRight: boolean = gameMessage.x > otherPlayer.x;
                 const thePlayerIsMovingUp: boolean = gameMessage.y < otherPlayer.y;
                 const thePlayerIsMovingDown: boolean = gameMessage.y > otherPlayer.y;
+
                 if (thePlayerIsMovingDown) {
                     otherPlayer.anims.play('down', true);
                 } else if (thePlayerIsMovingUp) {
@@ -117,9 +128,21 @@ export class GameScene extends Phaser.Scene {
 
 
                 if (thePlayerIsMovingLeft) {
-                    otherPlayer.anims.play('left', true);
+                    let animation = 'left';
+                    if (thePlayerIsMovingUp) {
+                        animation = 'up';
+                    } else if (thePlayerIsMovingDown) {
+                        animation = 'down';
+                    }
+                    otherPlayer.anims.play(animation, true);
                 } else if (thePlayerIsMovingRight) {
-                    otherPlayer.anims.play('right', true);
+                    let animation = 'right';
+                    if (thePlayerIsMovingUp) {
+                        animation = 'up';
+                    } else if (thePlayerIsMovingDown) {
+                        animation = 'down';
+                    }
+                    otherPlayer.anims.play(animation, true);
                 }
 
                 otherPlayer.setPosition(gameMessage.x, gameMessage.y);
@@ -139,7 +162,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     public update() {
-        if (!this.mySprite) return;
+        if (!this.mySprite || !this.game.input.keyboard.enabled) return;
 
         this.mySprite.body.setVelocity(0);
 
@@ -242,7 +265,6 @@ export class GameScene extends Phaser.Scene {
         this.cameras.main.startFollow(this.mySprite);
         this.cameras.main.setZoom(2);
         this.physics.add.existing(this.mySprite);
-        this.map.createStaticLayer("Above Player", this.tileset, 0, 0);
         this.physics.add.collider(this.mySprite, this.worldLayer);
         this.mySprite.body.setCollideWorldBounds(true);
         this.mySprite.body.onWorldBounds = true;

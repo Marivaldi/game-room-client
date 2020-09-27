@@ -20,6 +20,7 @@ export class GameScreenComponent implements OnInit, OnDestroy {
   showChat: boolean = false;
   joinLink: string = "";
   gameOverScreenTimeout;
+  disableGameInput: boolean = false;
   constructor(private router: Router, private route: ActivatedRoute, private gameSocket: GameSocketService) { }
   private routeSub: any;  // subscription to route observer
 

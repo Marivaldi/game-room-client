@@ -19,6 +19,8 @@ export class LobbyChatComponent implements OnInit, AfterViewChecked, AfterViewIn
   @ViewChild('chatForm') private chatForm: NgForm;
   @Input() joinLink: string = "";
   @Output() swipedLeft: EventEmitter<any> = new EventEmitter();
+  @Output() chatFocused: EventEmitter<any> = new EventEmitter();
+  @Output() chatBlurred: EventEmitter<any> = new EventEmitter();
 
   constructor(private gameSocket: GameSocketService) { }
   ngAfterViewInit(): void {
@@ -41,6 +43,9 @@ export class LobbyChatComponent implements OnInit, AfterViewChecked, AfterViewIn
     this.gameSocket.userStoppedTyping$.subscribe(() => this.someoneIsTyping = false);
   }
 
+  onChatFocus() {
+    this.chatFocused.emit()
+  }
   scrollToBottom(): void {
     try {
       this.chatWindow.nativeElement.scrollTop = this.chatWindow.nativeElement.scrollHeight;

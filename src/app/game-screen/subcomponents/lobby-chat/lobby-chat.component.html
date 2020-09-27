@@ -29,7 +29,7 @@
                 <div class="input-group">
                     <textarea (keydown)="keyDownFunction($event)" (keyup)="keyUpFunction($event)" name="chatMessage"
                         [ngModel]="chatMessage" (ngModelChange)="updateChatMessage($event)" class="form-control"
-                        style="resize: none;" required maxlength="275"></textarea>
+                        style="resize: none;" required maxlength="275" (focus)="onChatFocus()" (blur)="chatBlurred.emit()"></textarea>
                 </div>
                 <button class="btn btn-success mt-2 w-100" type="button" (click)="sendChatMessage()"
                     [disabled]="chatForm.invalid">Send</button>

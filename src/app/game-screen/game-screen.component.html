@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="d-sm-block col-md-3 px-0" [class.d-none]="!showChat" [class.col-12]="showChat" [class.in-left]="showChat">
-            <app-lobby-chat [joinLink]="joinLink" (swipedLeft)="closeChat()"></app-lobby-chat>
+            <app-lobby-chat (chatFocused)="disableGameInput = true" (chatBlurred)="disableGameInput = false" [joinLink]="joinLink" (swipedLeft)="closeChat()"></app-lobby-chat>
         </div>
         <div class="col-sm-9 col-12 d-md-block overflow-auto cool-scrollbar" [class.in-right]="!showChat" [class.d-none]="showChat" [class.out-right]="showChat" style="max-height: 100vh; min-height: 100vh;" (swiperight)="onSwipeRight()">
             <app-games-list *ngIf="!aGameIsStarting && !theGameHasStarted && !showGameOverScreen"></app-games-list>
@@ -9,7 +9,7 @@
             <app-game-over *ngIf="showGameOverScreen" [winners]="winners" (closeMe)="closeGameOverScreen()"></app-game-over>
             <app-test-game *ngIf="theGameHasStarted && activeGame === 'TEST_GAME'"></app-test-game>
             <app-trivia-game *ngIf="theGameHasStarted && activeGame === 'TRIVIA_GAME'"></app-trivia-game>
-            <app-phaser-game *ngIf="theGameHasStarted && activeGame === 'PHASER_GAME'"></app-phaser-game>
+            <app-phaser-game [disableGameInput]="disableGameInput" *ngIf="theGameHasStarted && activeGame === 'PHASER_GAME'"></app-phaser-game>
         </div>
     </div>
 </div>
