@@ -15,8 +15,8 @@ export class PhaserGameComponent implements OnInit {
   constructor(private gameSocket: GameSocketService) {
     this.config = {
       type: Phaser.AUTO,
-      height: 720,
-      width: 1080,
+      height: "90%",
+      width: "100%",
       scene: [new GameScene(this.gameSocket)],
       parent: 'game-container',
       physics: {
@@ -169,34 +169,54 @@ export class GameScene extends Phaser.Scene {
   public update() {
     if (!this.mySprite) return;
 
-    const cursorKeys = this.input.keyboard.createCursorKeys();
-
     this.mySprite.body.setVelocity(0);
 
-    if (cursorKeys.left.isDown) {
+    let thePlayerIsMovingLeft: boolean = false;
+    let thePlayerIsMovingRight: boolean = false;
+    let thePlayerIsMovingUp: boolean = false;
+    let thePlayerIsMovingDown: boolean = false;
+    const pointer = this.input.activePointer;
+    const cursorKeys = this.input.keyboard.createCursorKeys();
+    if (pointer.isDown) {
+      thePlayerIsMovingLeft = pointer.worldX < Math.round(this.mySprite.x);
+      thePlayerIsMovingRight = pointer.worldX > Math.round(this.mySprite.x);
+      thePlayerIsMovingUp = pointer.worldY < Math.round(this.mySprite.y);
+      thePlayerIsMovingDown = pointer.worldY > Math.round(this.mySprite.y);
+    } else {
+      thePlayerIsMovingLeft = cursorKeys.left.isDown;
+      thePlayerIsMovingRight = cursorKeys.right.isDown;
+      thePlayerIsMovingUp = cursorKeys.up.isDown;
+      thePlayerIsMovingDown = cursorKeys.down.isDown;
+    }
+
+    if (thePlayerIsMovingLeft) {
+
       this.mySprite.body.setVelocityX(-100);
       let animation = 'left';
-      if (cursorKeys.up.isDown) {
+      if (thePlayerIsMovingUp) {
         animation = 'up';
-      } else if (cursorKeys.down.isDown) {
+      } else if (thePlayerIsMovingDown) {
         animation = 'down';
       }
+
       this.mySprite.anims.play(animation, true);
-    } else if (cursorKeys.right.isDown) {
+
+    } else if (thePlayerIsMovingRight) {
       this.mySprite.body.setVelocityX(100);
       let animation = 'right';
-      if (cursorKeys.up.isDown) {
+      if (thePlayerIsMovingUp) {
         animation = 'up';
-      } else if (cursorKeys.down.isDown) {
+      } else if (thePlayerIsMovingDown) {
         animation = 'down';
       }
+
       this.mySprite.anims.play(animation, true);
     }
 
-    if (cursorKeys.up.isDown) {
+    if (thePlayerIsMovingUp) {
       this.mySprite.body.setVelocityY(-100);
       this.mySprite.anims.play('up', true);
-    } else if (cursorKeys.down.isDown) {
+    } else if (thePlayerIsMovingDown) {
       this.mySprite.body.setVelocityY(100);
       this.mySprite.anims.play('down', true);
     }
