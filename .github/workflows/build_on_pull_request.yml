@@ -1,8 +1,7 @@
-name: Build & Deploy to S3
+name: Build on Pull Request open.
 
 on:
-  workflow_dispatch:
-  push:
+  pull_request:
     branches:
       - master
 
@@ -27,6 +26,6 @@ jobs:
       - run: npm install
         env:
           CI: true
-      - name: Upload S3
+      - name: Build
         run: |
-          npm run build-and-deploy
+          npm run build
