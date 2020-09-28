@@ -21,7 +21,7 @@ At this point the code has been pulled down to the folder mention in Local Path.
 
 # Setup
 1. Open a command prompt
-2. CD into the `deception-game-client`
+2. CD into `deception-game-client`
 3. Run `npm install` (could take a while)
 
 # Running the App
