@@ -204,16 +204,20 @@ export class GameScene extends Phaser.Scene {
         let thePlayerIsMovingDown: boolean = false;
         const pointer = this.input.activePointer;
         const cursorKeys = this.input.keyboard.createCursorKeys();
+        const aKey = this.input.keyboard.addKey('A');
+        const dKey = this.input.keyboard.addKey('D');
+        const wKey = this.input.keyboard.addKey('W');
+        const sKey = this.input.keyboard.addKey('S');
         if (pointer.isDown) {
             thePlayerIsMovingLeft = pointer.worldX < Math.round(this.mySprite.x);
             thePlayerIsMovingRight = pointer.worldX > Math.round(this.mySprite.x);
             thePlayerIsMovingUp = pointer.worldY < Math.round(this.mySprite.y);
             thePlayerIsMovingDown = pointer.worldY > Math.round(this.mySprite.y);
         } else {
-            thePlayerIsMovingLeft = cursorKeys.left.isDown;
-            thePlayerIsMovingRight = cursorKeys.right.isDown;
-            thePlayerIsMovingUp = cursorKeys.up.isDown;
-            thePlayerIsMovingDown = cursorKeys.down.isDown;
+            thePlayerIsMovingLeft = cursorKeys.left.isDown || aKey.isDown;
+            thePlayerIsMovingRight = cursorKeys.right.isDown || dKey.isDown;
+            thePlayerIsMovingUp = cursorKeys.up.isDown || wKey.isDown;
+            thePlayerIsMovingDown = cursorKeys.down.isDown || sKey.isDown;
         }
 
         if (thePlayerIsMovingLeft) {
