@@ -19,6 +19,7 @@ export class GameScene extends Phaser.Scene {
     private sentStopped: boolean = false;
     private myName: Phaser.GameObjects.Text;
     private otherNames: Map<string, Phaser.GameObjects.Text> = new Map<string, Phaser.GameObjects.Text>();
+    private velocity: number = 100;
     constructor(private gameSocket: GameSocketService) {
         super(sceneConfig);
     }
@@ -64,6 +65,7 @@ export class GameScene extends Phaser.Scene {
         this.moveMyNameToMatchMyNewPosition();
         this.sendPlayerMovedMessage();
         this.updatePreviousPosition();
+        this.velocity = 100;
     }
 
     setupWorldMap() {
@@ -82,14 +84,14 @@ export class GameScene extends Phaser.Scene {
         this.overlapObjectsGroup.refresh();
     }
 
-    createOverlapObject = (object) => {
-        if (object.type === "Stand Point") {
-            let obj = this.overlapObjectsGroup.create(object.x, object.y, null, null, false);
-            obj.setScale(object.width / 32, object.height / 32);
-            obj.setOrigin(0);
-            obj.body.width = object.width;
-            obj.body.height = object.height;
-        }
+    createOverlapObject = (object: Phaser.Types.Tilemaps.TiledObject) => {
+        const obj = this.overlapObjectsGroup.create(object.x, object.y, null, null, false);
+        obj.setScale(object.width / 32, object.height / 32);
+        obj.setOrigin(0);
+        obj.type = object.type;
+        obj.name = object.name;
+        obj.body.width = object.width;
+        obj.body.height = object.height;
     }
 
     setupMainGuyAnimations() {
@@ -161,14 +163,20 @@ export class GameScene extends Phaser.Scene {
         });
 
         this.map.createStaticLayer("Above Player", this.tileset, 0, 0);
-        this.physics.add.overlap(this.mySprite, this.overlapObjectsGroup, (o1, o2) => {
-            // Handle when player is standing on overlap objects.
-        }, null, this);
+        this.physics.add.overlap(this.mySprite, this.overlapObjectsGroup, this.handleOverlaps);
+    }
+
+    handleOverlaps = (mySprite: Phaser.GameObjects.Sprite, overlappedObject: Phaser.Physics.Arcade.Sprite & {body: Phaser.Physics.Arcade.Body}) => {
+        // What happens when we overlap?
+        // We can check the type attribute on the overlapped object and write up logic to handle an type we want.
+        if(overlappedObject.type === 'SlowMo') {
+            this.velocity = 50;
+        }
     }
 
     addPlayer(playerPosition: PlayerPosition) {
-        const spawnPoint: any = this.map.findObject("Objects", (obj) => {
-            return obj.name === "Spawn Point"
+        const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => {
+            return obj.name === playerPosition.spawnPoint;
         });
         this.mySprite = this.add.sprite(spawnPoint.x, spawnPoint.y, 'main_guy');
         this.cameras.main.startFollow(this.mySprite);
@@ -182,8 +190,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     addOtherPlayers(playerInfo: PlayerPosition) {
-        const spawnPoint: any = this.map.findObject("Objects", (obj) => {
-            return obj.name === "Spawn Point"
+        const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => {
+            return obj.name === playerInfo.spawnPoint;
         });
         const otherPlayer: Player = (this.add.sprite(spawnPoint.x, spawnPoint.y, 'main_guy') as Player);
 
@@ -295,7 +303,7 @@ export class GameScene extends Phaser.Scene {
 
     handlePlayerMovement(thePlayerIsMovingLeft: boolean, thePlayerIsMovingRight: boolean, thePlayerIsMovingDown: boolean, thePlayerIsMovingUp: boolean) {
         if (thePlayerIsMovingLeft) {
-            this.mySprite.body.setVelocityX(-100);
+            this.mySprite.body.setVelocityX(this.velocity * -1);
             let animation = 'left';
             if (thePlayerIsMovingUp) {
                 animation = 'up';
@@ -304,7 +312,7 @@ export class GameScene extends Phaser.Scene {
             }
             this.mySprite.anims.play(animation, true);
         } else if (thePlayerIsMovingRight) {
-            this.mySprite.body.setVelocityX(100);
+            this.mySprite.body.setVelocityX(this.velocity);
             let animation = 'right';
             if (thePlayerIsMovingUp) {
                 animation = 'up';
@@ -315,10 +323,10 @@ export class GameScene extends Phaser.Scene {
         }
 
         if (thePlayerIsMovingUp) {
-            this.mySprite.body.setVelocityY(-100);
+            this.mySprite.body.setVelocityY(this.velocity * -1);
             this.mySprite.anims.play('up', true);
         } else if (thePlayerIsMovingDown) {
-            this.mySprite.body.setVelocityY(100);
+            this.mySprite.body.setVelocityY(this.velocity);
             this.mySprite.anims.play('down', true);
         }
     }

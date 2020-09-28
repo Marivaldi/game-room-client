@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="13" height="13" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="6">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="13" height="13" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="10">
  <editorsettings>
   <export target="main_map_v2.json" format="json"/>
  </editorsettings>
@@ -818,12 +818,23 @@
 </data>
  </layer>
  <objectgroup id="4" name="Objects">
-  <object id="1" name="Spawn Point" x="210.744" y="373.842">
+  <object id="2" name="Carpet" type="SlowMotion" x="162.182" y="129.196" width="89.7954" height="284.047"/>
+ </objectgroup>
+ <objectgroup id="5" name="SpawnPoints">
+  <object id="1" name="spawn_point1" x="210.744" y="373.842">
    <point/>
   </object>
-  <object id="2" name="Carpet" type="Stand Point" x="176.842" y="201.582" width="67.8047" height="56.8094"/>
-  <object id="3" type="Stand Point" x="35.7349" y="170.428" width="48.5629" height="33.9024"/>
-  <object id="4" type="Stand Point" x="87.0466" y="316.117" width="37.5675" height="36.6512"/>
-  <object id="5" type="Stand Point" x="315.2" y="309.703" width="59.5582" height="38.4838"/>
+  <object id="6" name="spawn_point2" x="250.145" y="393.084">
+   <point/>
+  </object>
+  <object id="7" name="spawn_point3" x="175.926" y="393.084">
+   <point/>
+  </object>
+  <object id="8" name="spawn_point4" x="296.875" y="395.833">
+   <point/>
+  </object>
+  <object id="9" name="spawn_point5" x="118.2" y="395.833">
+   <point/>
+  </object>
  </objectgroup>
 </map>

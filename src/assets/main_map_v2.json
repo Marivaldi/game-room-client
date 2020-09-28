@@ -52,18 +52,6 @@
          "name":"Objects",
          "objects":[
                 {
-                 "height":0,
-                 "id":1,
-                 "name":"Spawn Point",
-                 "point":true,
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":210.744,
-                 "y":373.842
-                }, 
-                {
                  "height":56.8093809653668,
                  "id":2,
                  "name":"Carpet",
@@ -112,9 +100,80 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":5,
+         "name":"SpawnPoints",
+         "objects":[
+                {
+                 "height":0,
+                 "id":1,
+                 "name":"spawn_point1",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":210.744,
+                 "y":373.842
+                }, 
+                {
+                 "height":0,
+                 "id":6,
+                 "name":"spawn_point2",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":250.144532315244,
+                 "y":393.084265066812
+                }, 
+                {
+                 "height":0,
+                 "id":7,
+                 "name":"spawn_point3",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":175.925824925007,
+                 "y":393.084265066812
+                }, 
+                {
+                 "height":0,
+                 "id":8,
+                 "name":"spawn_point4",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":296.874829560949,
+                 "y":395.833106081265
+                }, 
+                {
+                 "height":0,
+                 "id":9,
+                 "name":"spawn_point5",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":118.200163621489,
+                 "y":395.833106081265
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":5,
- "nextobjectid":6,
+ "nextlayerid":6,
+ "nextobjectid":10,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.4.2",
