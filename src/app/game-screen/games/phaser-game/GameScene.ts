@@ -169,7 +169,7 @@ export class GameScene extends Phaser.Scene {
     handleOverlaps = (mySprite: Phaser.GameObjects.Sprite, overlappedObject: Phaser.Physics.Arcade.Sprite & {body: Phaser.Physics.Arcade.Body}) => {
         // What happens when we overlap?
         // We can check the type attribute on the overlapped object and write up logic to handle an type we want.
-        if(overlappedObject.type === 'SlowMo') {
+        if(overlappedObject.type === 'SlowMotion') {
             this.velocity = 50;
         }
     }
