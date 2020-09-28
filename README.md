@@ -1,27 +1,29 @@
 # Client
+This is the Angular web frontend. You will also need to pull down the backend [Socket Server](https://github.com/Marivaldi/deception-game-socket-server) in order to run it locally.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.9.
+If you get stuck during setup just reach out to me.
 
-## Development server
+# Getting the Code.
+I prefer not to mess with the git command line where possible, so download [Github Desktop](https://desktop.github.com/) if you don't already have it, then follow along.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+1. Open Github Desktop
+2. Sign in.
+3. Click File > Clone Repository
+4. Select `deception-game-client` from the list
+5. Pay attention to the Local Path at the bottom so you know where to find the project.
+6. Click Clone
 
-## Code scaffolding
+At this point the code has been pulled down to the folder mention in Local Path.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+# Getting NodeJS and NPM
+1. Go [here](https://www.npmjs.com/get-npm)
+2. Click `Download Node.js and NPM`
 
-## Build
+# Setup
+1. Open a command prompt
+2. CD into the `deception-game-client`
+3. Run `npm install` (could take a while)
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+# Running the App
+1. In the command prompt, run `npm start`
+2. Open a browser to http://localhost:4200
