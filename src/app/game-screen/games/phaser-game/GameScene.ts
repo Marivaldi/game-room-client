@@ -13,9 +13,12 @@ export class GameScene extends Phaser.Scene {
     private previousPosition: any = {};
     private otherPlayers;
     private worldLayer: Phaser.Tilemaps.StaticTilemapLayer;
+    overlapObjectsGroup: Phaser.Physics.Arcade.StaticGroup;
     private map: Phaser.Tilemaps.Tilemap;
     private tileset;
     private sentStopped: boolean = false;
+    private myName: Phaser.GameObjects.Text;
+    private otherNames: Map<string, Phaser.GameObjects.Text> = new Map<string, Phaser.GameObjects.Text>();
     constructor(private gameSocket: GameSocketService) {
         super(sceneConfig);
     }
@@ -28,7 +31,11 @@ export class GameScene extends Phaser.Scene {
                 this.addOtherPlayers(playerPosition);
             }
         });
+
         this.map.createStaticLayer("Above Player", this.tileset, 0, 0);
+        this.physics.add.overlap(this.mySprite, this.overlapObjectsGroup, (o1, o2) => {
+            // Handle when player is standing on overlap objects.
+        }, null, this);
     }
 
     public preload() {
@@ -42,7 +49,7 @@ export class GameScene extends Phaser.Scene {
         this.map = this.make.tilemap({ key: "map" });
         this.physics.world.bounds.setTo(0, 0, 416, 416);
         this.tileset = this.map.addTilesetImage("castle", "tiles");
-        const belowLayer = this.map.createStaticLayer("Below Player", this.tileset, 0, 0);
+        this.map.createStaticLayer("Below Player", this.tileset, 0, 0);
         this.worldLayer = this.map.createStaticLayer("World", this.tileset, 0, 0);
         this.worldLayer.setCollisionByProperty({ collides: true });
         // const debugGraphics = this.add.graphics().setAlpha(0.75);
@@ -51,6 +58,26 @@ export class GameScene extends Phaser.Scene {
         //   collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
         //   faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
         // });
+
+
+
+        const overlapObjects = this.map.getObjectLayer('Objects').objects //my Object layer was called Overlap
+        this.overlapObjectsGroup = this.physics.add.staticGroup({
+
+        });
+
+        overlapObjects.forEach(object => {
+            if (object.type === "Stand Point") {
+                let obj = this.overlapObjectsGroup.create(object.x, object.y, null, null, false);
+                obj.setScale(object.width / 32, object.height / 32); //my tile size was 32
+                obj.setOrigin(0); //the positioning was off, and B3L7 mentioned the default was 0.5
+                obj.body.width = object.width; //body of the physics body
+                obj.body.height = object.height;
+            }
+        });
+
+
+        this.overlapObjectsGroup.refresh();
 
         this.anims.create({
             key: 'down',
@@ -81,7 +108,7 @@ export class GameScene extends Phaser.Scene {
         });
 
         this.gameSocket.gameActionReceived$.subscribe((gameMessage) => {
-            if(!this.otherPlayers) { this.otherPlayers = this.physics.add.group(); }
+            if (!this.otherPlayers) { this.otherPlayers = this.physics.add.group(); }
             if (!gameMessage || !gameMessage.type) return;
 
             switch (gameMessage.type) {
@@ -113,7 +140,7 @@ export class GameScene extends Phaser.Scene {
     handleOtherPlayerMoved(gameMessage) {
         if (!this.otherPlayers) return;
 
-        this.otherPlayers.getChildren().forEach(function (otherPlayer) {
+        this.otherPlayers.getChildren().forEach((otherPlayer) => {
             if (gameMessage.connectionId === otherPlayer.connectionId) {
                 const thePlayerIsMovingLeft: boolean = gameMessage.x < otherPlayer.x;
                 const thePlayerIsMovingRight: boolean = gameMessage.x > otherPlayer.x;
@@ -146,8 +173,13 @@ export class GameScene extends Phaser.Scene {
                 }
 
                 otherPlayer.setPosition(gameMessage.x, gameMessage.y);
+                const otherPlayerName = this.otherNames.get(gameMessage.connectionId);
+                otherPlayerName.x = otherPlayer.body.position.x - ((otherPlayerName.width/2) - (otherPlayer.width/2));
+                otherPlayerName.y = otherPlayer.body.position.y - otherPlayerName.height;
             }
         });
+
+
     }
 
 
@@ -250,6 +282,9 @@ export class GameScene extends Phaser.Scene {
             this.sentStopped = true;
         }
 
+        this.myName.x = this.mySprite.body.position.x - ((this.myName.width/2) - (this.mySprite.width/2) );
+        this.myName.y = this.mySprite.body.position.y - this.myName.height;
+
         // save old position data
         this.previousPosition = {
             x: this.mySprite.x,
@@ -257,7 +292,7 @@ export class GameScene extends Phaser.Scene {
         };
     }
 
-    addPlayer(playerInfo) {
+    addPlayer(playerPosition: PlayerPosition) {
         const spawnPoint: any = this.map.findObject("Objects", (obj) => {
             return obj.name === "Spawn Point"
         });
@@ -268,14 +303,19 @@ export class GameScene extends Phaser.Scene {
         this.physics.add.collider(this.mySprite, this.worldLayer);
         this.mySprite.body.setCollideWorldBounds(true);
         this.mySprite.body.onWorldBounds = true;
+        const style = { font: "11px Courier", fill: "#00ff44" };
+        this.myName = this.add.text(this.mySprite.x - 5, this.mySprite.y - 11, playerPosition.username, style);
     }
 
-    addOtherPlayers(playerInfo) {
+    addOtherPlayers(playerInfo: PlayerPosition) {
         const spawnPoint: any = this.map.findObject("Objects", (obj) => {
             return obj.name === "Spawn Point"
         });
         const otherPlayer: Player = (this.add.sprite(spawnPoint.x, spawnPoint.y, 'main_guy') as Player);
 
+        const style = { font: "11px Courier", fill: "#00ff44" };
+        const text = this.add.text(otherPlayer.x - 5, otherPlayer.y - 11, playerInfo.username, style);
+        this.otherNames.set(playerInfo.connectionId, text);
         otherPlayer.connectionId = playerInfo.connectionId;
         this.otherPlayers.add(otherPlayer);
     }
