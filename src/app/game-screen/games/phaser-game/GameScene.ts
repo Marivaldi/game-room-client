@@ -20,6 +20,7 @@ export class GameScene extends Phaser.Scene {
     private sentStopped: boolean = false;
     private myName: Phaser.GameObjects.Text;
     private otherNames: Map<string, Phaser.GameObjects.Text> = new Map<string, Phaser.GameObjects.Text>();
+    private otherHitBoxes: Map<string, Phaser.GameObjects.Sprite> = new Map<string, Phaser.Physics.Arcade.Sprite>();
     private velocity: number = 100;
     constructor(private gameSocket: GameSocketService) {
         super(sceneConfig);
@@ -173,6 +174,10 @@ export class GameScene extends Phaser.Scene {
             case ObjectType.SLOW_MOTION:
                 this.makePlayerSlower();
                 break;
+            case ObjectType.OTHER_PLAYER:
+                // get connectionId from overlappedObject.name
+                // Decide how to interact with the player
+                break;
             default:
                 break;
         }
@@ -198,11 +203,27 @@ export class GameScene extends Phaser.Scene {
     addOtherPlayers(playerInfo: PlayerPosition) {
         const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => obj.name === playerInfo.spawnPoint);
         const otherPlayer: Player = (this.add.sprite(spawnPoint.x, spawnPoint.y, 'main_guy') as Player);
-        const style = { font: "11px Courier", fill: "#00ff44" };
-        const text = this.add.text(otherPlayer.x - 5, otherPlayer.y - 11, playerInfo.username, style);
-        this.otherNames.set(playerInfo.connectionId, text);
         otherPlayer.connectionId = playerInfo.connectionId;
         this.otherPlayers.add(otherPlayer);
+        this.addOtherPlayerName(otherPlayer, playerInfo); 
+        this.addOtherPlayerHitBox(otherPlayer, playerInfo);
+    }
+
+    addOtherPlayerName(otherPlayer, playerInfo) {
+        const style = { font: "11px Courier", fill: "#00ff44" };
+        const text = this.add.text(otherPlayer.body.position.x - 5, otherPlayer.body.position.y - 11, playerInfo.username, style);
+        this.otherNames.set(playerInfo.connectionId, text);
+    }
+
+    addOtherPlayerHitBox(otherPlayer, playerInfo) {
+        const obj = this.overlapObjectsGroup.create(otherPlayer.x, otherPlayer.y, null, null, false);
+        obj.setScale(otherPlayer.width / 32, otherPlayer.height / 32);
+        obj.setOrigin(0);
+        obj.type = "OtherPlayer"
+        obj.name = playerInfo.connectionId;
+        obj.body.width = otherPlayer.width;
+        obj.body.height = otherPlayer.height;
+        this.otherHitBoxes.set(playerInfo.connectionId, obj);
     }
 
     handleOtherPlayerMoved(gameMessage) {
@@ -241,15 +262,20 @@ export class GameScene extends Phaser.Scene {
                 }
 
                 otherPlayer.setPosition(gameMessage.x, gameMessage.y);
+
                 const otherPlayerName = this.otherNames.get(gameMessage.connectionId);
                 otherPlayerName.x = otherPlayer.body.position.x - ((otherPlayerName.width / 2) - (otherPlayer.width / 2));
                 otherPlayerName.y = otherPlayer.body.position.y - otherPlayerName.height;
+
+
+                const otherPlayerHitBox = this.otherHitBoxes.get(gameMessage.connectionId);
+                otherPlayerHitBox.body.position.x = otherPlayer.body.position.x
+                otherPlayerHitBox.body.position.y = otherPlayer.body.position.y
             }
         });
 
 
     }
-
 
     handleOtherPlayerStopped(gameMessage) {
         if (!this.otherPlayers) return;
