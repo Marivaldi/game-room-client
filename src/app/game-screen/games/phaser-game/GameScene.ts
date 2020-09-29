@@ -1,5 +1,6 @@
 import { GameKey } from 'src/app/models/enums/game-key';
 import { GameSocketService } from 'src/app/services/game-socket.service';
+import { ObjectType } from './ObjectType';
 import { PlayerPosition } from './PlayerPosition';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
@@ -167,17 +168,22 @@ export class GameScene extends Phaser.Scene {
     }
 
     handleOverlaps = (mySprite: Phaser.GameObjects.Sprite, overlappedObject: Phaser.Physics.Arcade.Sprite & {body: Phaser.Physics.Arcade.Body}) => {
-        // What happens when we overlap?
         // We can check the type attribute on the overlapped object and write up logic to handle an type we want.
-        if(overlappedObject.type === 'SlowMotion') {
-            this.velocity = 50;
+        switch(overlappedObject.type) {
+            case ObjectType.SLOW_MOTION:
+                this.makePlayerSlower();
+                break;
+            default:
+                break;
         }
     }
 
+    makePlayerSlower() {
+        this.velocity = 50;
+    }
+
     addPlayer(playerPosition: PlayerPosition) {
-        const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => {
-            return obj.name === playerPosition.spawnPoint;
-        });
+        const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => obj.name === playerPosition.spawnPoint);
         this.mySprite = this.add.sprite(spawnPoint.x, spawnPoint.y, 'main_guy');
         this.cameras.main.startFollow(this.mySprite);
         this.cameras.main.setZoom(2);
@@ -190,11 +196,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     addOtherPlayers(playerInfo: PlayerPosition) {
-        const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => {
-            return obj.name === playerInfo.spawnPoint;
-        });
+        const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => obj.name === playerInfo.spawnPoint);
         const otherPlayer: Player = (this.add.sprite(spawnPoint.x, spawnPoint.y, 'main_guy') as Player);
-
         const style = { font: "11px Courier", fill: "#00ff44" };
         const text = this.add.text(otherPlayer.x - 5, otherPlayer.y - 11, playerInfo.username, style);
         this.otherNames.set(playerInfo.connectionId, text);
