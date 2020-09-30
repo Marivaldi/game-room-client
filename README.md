@@ -27,3 +27,6 @@ At this point the code has been pulled down to the folder mention in Local Path.
 # Running the App
 1. In the command prompt, run `npm start`
 2. Open a browser to http://localhost:4200
+
+
+Making a change to the README
