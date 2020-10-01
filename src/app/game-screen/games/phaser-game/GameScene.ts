@@ -79,7 +79,6 @@ export class GameScene extends Phaser.Scene {
         this.playerManager.handlePlayerMovement(playerMoving.left, playerMoving.right, playerMoving.down, playerMoving.up);
 
         if (!this.playerManager.mySpriteHasMoved()) {
-            console.log("I Stopped");
             this.playerManager.stopPlayerAnimations();
             this.socketManager.sendPlayerStoppedMessage();
             return;
@@ -133,7 +132,6 @@ export class GameScene extends Phaser.Scene {
     }
 
     setupAnimations(spriteKey: string) {
-        console.log(spriteKey);
         this.anims.create({
             key: `${spriteKey}_down`,
             frames: this.anims.generateFrameNumbers(spriteKey, { frames: [0, 1, 2] }),
@@ -171,7 +169,6 @@ export class GameScene extends Phaser.Scene {
                 this.makePlayerSlower();
                 break;
             case ObjectType.OTHER_PLAYER:
-                console.log(overlappedObject.name);
                 if(!this.playerManager.playersInRange.includes(overlappedObject.name)) {this.playerManager.playersInRange.push(overlappedObject.name);}
                 break;
             default:

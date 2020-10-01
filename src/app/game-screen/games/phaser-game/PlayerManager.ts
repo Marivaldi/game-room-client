@@ -61,7 +61,6 @@ export class PlayerManager {
         sprite.setDepth(2);
         this.otherPlayersGroup.add(sprite);
         otherPlayer.sprite = sprite;
-        console.log("ADD OTHER PLAYERS", otherPlayer);
 
         const style = { font: "11px Courier", fill: "#00ff44" };
         otherPlayer.name = this.scene.add.text(otherPlayer.sprite.body.position.x - 5, otherPlayer.sprite.body.position.y - 11, playerInfo.username, style);
@@ -128,8 +127,6 @@ export class PlayerManager {
 
         const otherPlayer = this.otherPlayers.get(gameMessage.connectionId);
         if (!otherPlayer) return;
-
-        console.log("OTHER PLAYER MOVED", otherPlayer);
 
         const thePlayerIsMovingLeft: boolean = gameMessage.x < otherPlayer.sprite.x;
         const thePlayerIsMovingRight: boolean = gameMessage.x > otherPlayer.sprite.x;
