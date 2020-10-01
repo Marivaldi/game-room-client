@@ -1,6 +1,7 @@
 import { GameScene } from './GameScene';
 import { Player } from './Player';
 import { PlayerInformation } from './PlayerInformation';
+import { PlayerRoles } from './PlayerRoles';
 
 export class PlayerManager {
     player: Player;
@@ -178,18 +179,26 @@ export class PlayerManager {
     }
 
     attackPlayer(connectionId: string) {
-        if (!this.otherPlayers) return;
-
-        const otherPlayer = this.otherPlayers.get(connectionId);
-        if (!otherPlayer) return;
-
         console.log(`Attacking Player ${connectionId}`);
         this.attackIsCoolingDown = true;
         setTimeout(() => {
             this.attackIsCoolingDown = false;
             console.log("Attack done cooling down");
-        }, 5000)
+        }, 5000);
 
+        this.scene.socketManager.sendKillPlayerMessage(connectionId);
+    }
+
+    killPlayer(connectionId: string) {
+        if(connectionId === this.player.connectionId){
+            this.killMe();
+            return;
+        }
+
+        if (!this.otherPlayers) return;
+
+        const otherPlayer = this.otherPlayers.get(connectionId);
+        if (!otherPlayer) return;
 
         otherPlayer.sprite.anims.stop();
         this.addDeadPlayer(otherPlayer.sprite.x, otherPlayer.sprite.y, connectionId);
@@ -198,8 +207,21 @@ export class PlayerManager {
         otherPlayer.overlapArea.destroy();
         this.playersInRange.filter((inRangeConnectionId) => connectionId !== inRangeConnectionId);
         this.otherPlayers.delete(connectionId);
+    }
 
-
+    killMe() {
+        const x = this.player.sprite.x;
+        const y = this.player.sprite.y;
+        this.player.sprite.destroy();
+        this.player.sprite =  (this.scene.add.sprite(x, y, 'dead') as Phaser.GameObjects.Sprite & { body: Phaser.Physics.Arcade.Body });
+        this.player.sprite.setScale(0.5)
+        this.scene.cameras.main.startFollow(this.player.sprite);
+        this.scene.cameras.main.setZoom(2);
+        this.scene.physics.add.existing(this.player.sprite);
+        this.scene.physics.add.collider(this.player.sprite, this.scene.worldLayer);
+        this.player.sprite.body.setCollideWorldBounds(true);
+        this.player.sprite.setDepth(3);
+        this.player.role = PlayerRoles.DEAD;
     }
 
     addDeadPlayer(x: number, y: number, connectionId: string) {
