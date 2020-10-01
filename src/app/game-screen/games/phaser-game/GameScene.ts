@@ -1,7 +1,7 @@
 import { GameKey } from 'src/app/models/enums/game-key';
 import { GameSocketService } from 'src/app/services/game-socket.service';
 import { ObjectType } from './ObjectType';
-import { PlayerPosition } from './PlayerPosition';
+import { PlayerInformation } from './PlayerInformation';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
@@ -12,7 +12,8 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export class GameScene extends Phaser.Scene {
     private mySprite;
     private previousPosition: any = {};
-    private otherPlayers;
+    private otherPlayers: Phaser.Physics.Arcade.Group;
+    private deadPlayers: Phaser.Physics.Arcade.Group;
     private worldLayer: Phaser.Tilemaps.StaticTilemapLayer;
     private overlapObjectsGroup: Phaser.Physics.Arcade.StaticGroup;
     private map: Phaser.Tilemaps.Tilemap;
@@ -21,13 +22,21 @@ export class GameScene extends Phaser.Scene {
     private myName: Phaser.GameObjects.Text;
     private otherNames: Map<string, Phaser.GameObjects.Text> = new Map<string, Phaser.GameObjects.Text>();
     private otherHitBoxes: Map<string, Phaser.GameObjects.Sprite> = new Map<string, Phaser.Physics.Arcade.Sprite>();
+    private playersInRange: string[] = [];
+    private attackCoolingDown: boolean = false;
     private velocity: number = 100;
+    private myPlayerType = "necromancer";
+
     constructor(private gameSocket: GameSocketService) {
         super(sceneConfig);
     }
 
     public preload() {
-        this.load.spritesheet('main_guy', 'assets/Character.png', { frameHeight: 32, frameWidth: 32, endFrame: 15 });
+        this.load.spritesheet('default_player', 'assets/default_player.png', { frameHeight: 72, frameWidth: 52 });
+        this.load.spritesheet('hero_1', 'assets/hero_1.png', { frameHeight: 72, frameWidth: 52 });
+        this.load.spritesheet('necromancer', 'assets/necromancer.png', { frameHeight: 72, frameWidth: 52 });
+        this.load.spritesheet('hero_2', 'assets/hero_2.png', { frameHeight: 72, frameWidth: 52 });
+        this.load.spritesheet('dead', 'assets/dead.png', { frameHeight: 72, frameWidth: 52 });
         this.load.image("tiles", "/assets/castle.png");
         this.load.tilemapTiledJSON("map", "/assets/main_map_v2.json");
     }
@@ -38,13 +47,19 @@ export class GameScene extends Phaser.Scene {
 
         this.setupOverlapObjects();
 
-        this.setupMainGuyAnimations();
+
+        this.setupAnimations('necromancer');
+        this.setupAnimations('dead');
+        this.setupAnimations('default_player');
+        this.setupAnimations('hero_1');
+        this.setupAnimations('hero_2');
 
         this.gameSocket.gameActionReceived$.subscribe(this.handleMessage);
 
         this.gameSocket.pressPlay(GameKey.PHASER_GAME);
 
         this.sendGetPlayersMessage();
+        this.deadPlayers = this.physics.add.group();
     }
 
     public update() {
@@ -55,6 +70,8 @@ export class GameScene extends Phaser.Scene {
         this.mySprite.body.setVelocity(0);
 
         const playerMoving: PlayerMovement = this.getPlayerMovement();
+
+        this.handlePlayerInput();
 
         this.handlePlayerMovement(playerMoving.left, playerMoving.right, playerMoving.down, playerMoving.up);
 
@@ -68,6 +85,23 @@ export class GameScene extends Phaser.Scene {
         this.sendPlayerMovedMessage();
         this.updatePreviousPosition();
         this.velocity = 100;
+        this.playersInRange = [];
+    }
+
+    iAmAKillingRole(): boolean {
+        return this.myPlayerType === "necromancer";
+    }
+
+    handlePlayerInput() {
+        const cursorKeys = this.input.keyboard.createCursorKeys();
+        const thePlayerIsPressingSpacebar = cursorKeys.space.isDown;
+        if (thePlayerIsPressingSpacebar && this.canAttack()) this.attackPlayer(this.playersInRange[0]);
+    }
+
+    canAttack() : boolean {
+        const isAKillingRole: boolean = this.iAmAKillingRole();
+        const atLeastOnePlayerIsInRange: boolean = this.playersInRange.length > 0;
+        return isAKillingRole && atLeastOnePlayerIsInRange && !this.attackCoolingDown;
     }
 
     setupWorldMap() {
@@ -96,31 +130,31 @@ export class GameScene extends Phaser.Scene {
         obj.body.height = object.height;
     }
 
-    setupMainGuyAnimations() {
+    setupAnimations(spriteKey: string) {
         this.anims.create({
-            key: 'down',
-            frames: this.anims.generateFrameNumbers('main_guy', { frames: [0, 4, 8, 12] }),
+            key: `${spriteKey}_down`,
+            frames: this.anims.generateFrameNumbers(spriteKey, { frames: [0, 1, 2] }),
             frameRate: 10,
             repeat: -1
         });
 
         this.anims.create({
-            key: 'up',
-            frames: this.anims.generateFrameNumbers('main_guy', { frames: [1, 5, 9, 13] }),
+            key: `${spriteKey}_up`,
+            frames: this.anims.generateFrameNumbers(spriteKey, { frames: [9, 10, 11] }),
             frameRate: 10,
             repeat: -1
         });
 
         this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('main_guy', { frames: [2, 6, 10, 14] }),
+            key: `${spriteKey}_right`,
+            frames: this.anims.generateFrameNumbers(spriteKey, { frames: [6, 7, 8] }),
             frameRate: 10,
             repeat: -1
         });
 
         this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('main_guy', { frames: [3, 7, 11, 15] }),
+            key: `${spriteKey}_left`,
+            frames: this.anims.generateFrameNumbers(spriteKey, { frames: [3, 4, 5] }),
             frameRate: 10,
             repeat: -1
         });
@@ -154,13 +188,13 @@ export class GameScene extends Phaser.Scene {
         });
     }
 
-    handleAddPlayers(playerPositions: PlayerPosition[]) {
+    handleAddPlayers(playerPositions: PlayerInformation[]) {
         this.otherPlayers = this.physics.add.group();
-        playerPositions.forEach((playerPosition: PlayerPosition) => {
+        playerPositions.forEach((playerPosition: PlayerInformation) => {
             if (playerPosition.connectionId === this.gameSocket.server_connnection_id) {
                 this.addPlayer(playerPosition);
             } else {
-                this.addOtherPlayers(playerPosition);
+                this.addOtherPlayers(playerPosition, 'default_player');
             }
         });
 
@@ -168,15 +202,15 @@ export class GameScene extends Phaser.Scene {
         this.physics.add.overlap(this.mySprite, this.overlapObjectsGroup, this.handleOverlaps);
     }
 
-    handleOverlaps = (mySprite: Phaser.GameObjects.Sprite, overlappedObject: Phaser.Physics.Arcade.Sprite & {body: Phaser.Physics.Arcade.Body}) => {
+    handleOverlaps = (mySprite: Phaser.GameObjects.Sprite, overlappedObject: Phaser.Physics.Arcade.Sprite & { body: Phaser.Physics.Arcade.Body }) => {
         // We can check the type attribute on the overlapped object and write up logic to handle an type we want.
-        switch(overlappedObject.type) {
+        switch (overlappedObject.type) {
             case ObjectType.SLOW_MOTION:
                 this.makePlayerSlower();
                 break;
             case ObjectType.OTHER_PLAYER:
-                // get connectionId from overlappedObject.name
-                // Decide how to interact with the player
+                console.log(overlappedObject.name);
+                this.playersInRange.push(overlappedObject.name);
                 break;
             default:
                 break;
@@ -187,25 +221,28 @@ export class GameScene extends Phaser.Scene {
         this.velocity = 50;
     }
 
-    addPlayer(playerPosition: PlayerPosition) {
-        const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => obj.name === playerPosition.spawnPoint);
-        this.mySprite = this.add.sprite(spawnPoint.x, spawnPoint.y, 'main_guy');
+    addPlayer(playerInfo: PlayerInformation) {
+        const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => obj.name === playerInfo.spawnPoint);
+        this.myPlayerType = playerInfo.role;
+        this.mySprite = this.add.sprite(spawnPoint.x, spawnPoint.y, this.myPlayerType);
         this.cameras.main.startFollow(this.mySprite);
+        this.mySprite.setScale(0.5)
         this.cameras.main.setZoom(2);
         this.physics.add.existing(this.mySprite);
         this.physics.add.collider(this.mySprite, this.worldLayer);
         this.mySprite.body.setCollideWorldBounds(true);
         this.mySprite.body.onWorldBounds = true;
         const style = { font: "11px Courier", fill: "#00ff44" };
-        this.myName = this.add.text(this.mySprite.x - 5, this.mySprite.y - 11, playerPosition.username, style);
+        this.myName = this.add.text(this.mySprite.x - 5, this.mySprite.y - 11, playerInfo.username, style);
     }
 
-    addOtherPlayers(playerInfo: PlayerPosition) {
+    addOtherPlayers(playerInfo: PlayerInformation, spriteKey: string) {
         const spawnPoint: any = this.map.findObject("SpawnPoints", (obj) => obj.name === playerInfo.spawnPoint);
-        const otherPlayer: Player = (this.add.sprite(spawnPoint.x, spawnPoint.y, 'main_guy') as Player);
+        const otherPlayer: Player = (this.add.sprite(spawnPoint.x, spawnPoint.y, spriteKey) as Player);
+        otherPlayer.setScale(0.5);
         otherPlayer.connectionId = playerInfo.connectionId;
         this.otherPlayers.add(otherPlayer);
-        this.addOtherPlayerName(otherPlayer, playerInfo); 
+        this.addOtherPlayerName(otherPlayer, playerInfo);
         this.addOtherPlayerHitBox(otherPlayer, playerInfo);
     }
 
@@ -217,19 +254,49 @@ export class GameScene extends Phaser.Scene {
 
     addOtherPlayerHitBox(otherPlayer, playerInfo) {
         const obj = this.overlapObjectsGroup.create(otherPlayer.x, otherPlayer.y, null, null, false);
-        obj.setScale(otherPlayer.width / 32, otherPlayer.height / 32);
-        obj.setOrigin(0);
         obj.type = "OtherPlayer"
         obj.name = playerInfo.connectionId;
-        obj.body.width = otherPlayer.width;
-        obj.body.height = otherPlayer.height;
+        obj.body.width = otherPlayer.body.width;
+        obj.body.height = otherPlayer.body.height;
         this.otherHitBoxes.set(playerInfo.connectionId, obj);
+    }
+
+    attackPlayer(connectionId: string) {
+        if (!this.otherPlayers) return;
+
+        console.log(`Attacking Player ${connectionId}`);
+        this.attackCoolingDown = true;
+        setTimeout(() => {
+            this.attackCoolingDown = false;
+            console.log("Attack done cooling down");
+        }, 5000)
+
+        this.otherPlayers.getChildren().forEach((otherPlayer: Phaser.Physics.Arcade.Sprite & { connectionId: string }) => {
+            if (connectionId === otherPlayer.connectionId) {
+                otherPlayer.anims.stop();
+                this.addDeadPlayer(otherPlayer.x,  otherPlayer.y, connectionId);
+                this.otherPlayers.remove(otherPlayer);
+                otherPlayer.destroy();
+                // this.otherNames.get(connectionId).destroy();
+                // this.otherNames.delete(connectionId);
+                this.otherHitBoxes.get(connectionId).destroy();
+                this.otherHitBoxes.delete(connectionId);
+                this.playersInRange.filter((inRangeConnectionId) => connectionId !== inRangeConnectionId);
+            }
+        });
+    }
+
+    addDeadPlayer(x: number, y: number, connectionId: string) {
+        const deadPlayer: Player = (this.add.sprite(x, y, 'dead') as Player);
+        deadPlayer.setScale(0.5);
+        deadPlayer.connectionId = connectionId;
+        this.deadPlayers.add(deadPlayer);
     }
 
     handleOtherPlayerMoved(gameMessage) {
         if (!this.otherPlayers) return;
 
-        this.otherPlayers.getChildren().forEach((otherPlayer) => {
+        this.otherPlayers.getChildren().forEach((otherPlayer: Phaser.Physics.Arcade.Sprite & { connectionId: string }) => {
             if (gameMessage.connectionId === otherPlayer.connectionId) {
                 const thePlayerIsMovingLeft: boolean = gameMessage.x < otherPlayer.x;
                 const thePlayerIsMovingRight: boolean = gameMessage.x > otherPlayer.x;
@@ -237,9 +304,9 @@ export class GameScene extends Phaser.Scene {
                 const thePlayerIsMovingDown: boolean = gameMessage.y > otherPlayer.y;
 
                 if (thePlayerIsMovingDown) {
-                    otherPlayer.anims.play('down', true);
+                    otherPlayer.anims.play('default_player_down', true);
                 } else if (thePlayerIsMovingUp) {
-                    otherPlayer.anims.play('up', true);
+                    otherPlayer.anims.play('default_player_up', true);
                 }
 
 
@@ -250,7 +317,7 @@ export class GameScene extends Phaser.Scene {
                     } else if (thePlayerIsMovingDown) {
                         animation = 'down';
                     }
-                    otherPlayer.anims.play(animation, true);
+                    otherPlayer.anims.play("default_player_" + animation, true);
                 } else if (thePlayerIsMovingRight) {
                     let animation = 'right';
                     if (thePlayerIsMovingUp) {
@@ -258,29 +325,28 @@ export class GameScene extends Phaser.Scene {
                     } else if (thePlayerIsMovingDown) {
                         animation = 'down';
                     }
-                    otherPlayer.anims.play(animation, true);
+                    otherPlayer.anims.play("default_player_" + animation, true);
                 }
 
                 otherPlayer.setPosition(gameMessage.x, gameMessage.y);
 
                 const otherPlayerName = this.otherNames.get(gameMessage.connectionId);
-                otherPlayerName.x = otherPlayer.body.position.x - ((otherPlayerName.width / 2) - (otherPlayer.width / 2));
+                otherPlayerName.x = otherPlayer.body.position.x - ((otherPlayerName.width / 2) - (otherPlayer.displayWidth / 2));
                 otherPlayerName.y = otherPlayer.body.position.y - otherPlayerName.height;
 
 
                 const otherPlayerHitBox = this.otherHitBoxes.get(gameMessage.connectionId);
-                otherPlayerHitBox.body.position.x = otherPlayer.body.position.x
-                otherPlayerHitBox.body.position.y = otherPlayer.body.position.y
+                otherPlayerHitBox.x = otherPlayer.x
+                otherPlayerHitBox.y = otherPlayer.y
+                this.overlapObjectsGroup.refresh();
             }
         });
-
-
     }
 
     handleOtherPlayerStopped(gameMessage) {
         if (!this.otherPlayers) return;
 
-        this.otherPlayers.getChildren().forEach(function (otherPlayer) {
+        this.otherPlayers.getChildren().forEach(function (otherPlayer: Phaser.Physics.Arcade.Sprite & { connectionId: string }) {
             if (gameMessage.connectionId === otherPlayer.connectionId) {
                 otherPlayer.anims.stop();
             }
@@ -339,7 +405,7 @@ export class GameScene extends Phaser.Scene {
             } else if (thePlayerIsMovingDown) {
                 animation = 'down';
             }
-            this.mySprite.anims.play(animation, true);
+            this.mySprite.anims.play(this.myPlayerType + "_" + animation, true);
         } else if (thePlayerIsMovingRight) {
             this.mySprite.body.setVelocityX(this.velocity);
             let animation = 'right';
@@ -348,15 +414,15 @@ export class GameScene extends Phaser.Scene {
             } else if (thePlayerIsMovingDown) {
                 animation = 'down';
             }
-            this.mySprite.anims.play(animation, true);
+            this.mySprite.anims.play(this.myPlayerType + "_" + animation, true);
         }
 
         if (thePlayerIsMovingUp) {
             this.mySprite.body.setVelocityY(this.velocity * -1);
-            this.mySprite.anims.play('up', true);
+            this.mySprite.anims.play(this.myPlayerType+'_up', true);
         } else if (thePlayerIsMovingDown) {
             this.mySprite.body.setVelocityY(this.velocity);
-            this.mySprite.anims.play('down', true);
+            this.mySprite.anims.play(this.myPlayerType+'_down', true);
         }
     }
 
@@ -379,7 +445,7 @@ export class GameScene extends Phaser.Scene {
 
 
     moveMyNameToMatchMyNewPosition() {
-        this.myName.x = this.mySprite.body.position.x - ((this.myName.width / 2) - (this.mySprite.width / 2));
+        this.myName.x = this.mySprite.body.position.x - ((this.myName.width / 2) - (this.mySprite.displayWidth / 2));
         this.myName.y = this.mySprite.body.position.y - this.myName.height;
     }
 
