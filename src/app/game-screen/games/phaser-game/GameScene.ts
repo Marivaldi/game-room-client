@@ -111,6 +111,8 @@ export class GameScene extends Phaser.Scene {
         this.map.createStaticLayer("Below Player", this.tileset, 0, 0);
         this.worldLayer = this.map.createStaticLayer("World", this.tileset, 0, 0);
         this.worldLayer.setCollisionByProperty({ collides: true });
+        const abovePlayer: Phaser.Tilemaps.StaticTilemapLayer = this.map.createStaticLayer("Above Player", this.tileset, 0, 0);
+        abovePlayer.setDepth(5);
     }
 
     setupOverlapObjects() {
@@ -198,7 +200,7 @@ export class GameScene extends Phaser.Scene {
             }
         });
 
-        this.map.createStaticLayer("Above Player", this.tileset, 0, 0);
+        
         this.physics.add.overlap(this.mySprite, this.overlapObjectsGroup, this.handleOverlaps);
     }
 
@@ -234,6 +236,7 @@ export class GameScene extends Phaser.Scene {
         this.mySprite.body.onWorldBounds = true;
         const style = { font: "11px Courier", fill: "#00ff44" };
         this.myName = this.add.text(this.mySprite.x - 5, this.mySprite.y - 11, playerInfo.username, style);
+        this.mySprite.setDepth(2);
     }
 
     addOtherPlayers(playerInfo: PlayerInformation, spriteKey: string) {
@@ -241,6 +244,7 @@ export class GameScene extends Phaser.Scene {
         const otherPlayer: Player = (this.add.sprite(spawnPoint.x, spawnPoint.y, spriteKey) as Player);
         otherPlayer.setScale(0.5);
         otherPlayer.connectionId = playerInfo.connectionId;
+        otherPlayer.setDepth(2);
         this.otherPlayers.add(otherPlayer);
         this.addOtherPlayerName(otherPlayer, playerInfo);
         this.addOtherPlayerHitBox(otherPlayer, playerInfo);
@@ -277,6 +281,7 @@ export class GameScene extends Phaser.Scene {
                 this.addDeadPlayer(otherPlayer.x,  otherPlayer.y, connectionId);
                 this.otherPlayers.remove(otherPlayer);
                 otherPlayer.destroy();
+                this.otherNames.get(connectionId).setColor('#8B0000');
                 // this.otherNames.get(connectionId).destroy();
                 // this.otherNames.delete(connectionId);
                 this.otherHitBoxes.get(connectionId).destroy();
@@ -290,6 +295,7 @@ export class GameScene extends Phaser.Scene {
         const deadPlayer: Player = (this.add.sprite(x, y, 'dead') as Player);
         deadPlayer.setScale(0.5);
         deadPlayer.connectionId = connectionId;
+        deadPlayer.setDepth(1);
         this.deadPlayers.add(deadPlayer);
     }
 
