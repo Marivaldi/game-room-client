@@ -20,13 +20,8 @@ export class GameScene extends Phaser.Scene {
     socketManager: SocketManager;
     overlapObjectsGroup: Phaser.Physics.Arcade.StaticGroup;
     velocity: number = 100;
-    private otherPlayers: Phaser.Physics.Arcade.Group;
-    private deadPlayers: Phaser.Physics.Arcade.Group;
     private tileset;
-    private otherNames: Map<string, Phaser.GameObjects.Text> = new Map<string, Phaser.GameObjects.Text>();
-    private otherHitBoxes: Map<string, Phaser.GameObjects.Sprite> = new Map<string, Phaser.Physics.Arcade.Sprite>();
     private attackCoolingDown: boolean = false;
-
     constructor(public gameSocket: GameSocketService) {
         super(sceneConfig);
     }
@@ -62,7 +57,6 @@ export class GameScene extends Phaser.Scene {
         this.gameSocket.pressPlay(GameKey.PHASER_GAME);
 
         this.socketManager.sendGetPlayersMessage();
-        this.deadPlayers = this.physics.add.group();
     }
 
     public update() {
