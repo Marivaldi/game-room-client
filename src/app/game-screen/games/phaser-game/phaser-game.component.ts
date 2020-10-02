@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import Phaser from 'phaser';
 import { GameSocketService } from 'src/app/services/game-socket.service';
 import { GameScene } from './GameScene';
+import { HUDScene } from './HUDScene';
 
 
 @Component({
@@ -28,7 +29,7 @@ export class PhaserGameComponent implements OnInit {
       type: Phaser.AUTO,
       height: "90%",
       width: "100%",
-      scene: [new GameScene(this.gameSocket)],
+      scene: [new GameScene(this.gameSocket), new HUDScene()],
       parent: 'game-container',
       physics: {
         default: 'arcade',

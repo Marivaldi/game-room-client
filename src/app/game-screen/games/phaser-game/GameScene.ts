@@ -7,7 +7,7 @@ import { PlayerMovement } from './PlayerMovement';
 import { SocketManager } from './SocketManager';
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
-    active: false,
+    active: true,
     visible: false,
     key: 'Game',
 };
@@ -63,6 +63,8 @@ export class GameScene extends Phaser.Scene {
         const mySpriteHasNotLoadedYet = !this.playerManager.player || !this.playerManager.player.sprite;
         const inputIsDisabled = !this.game.input.keyboard.enabled;
         if (mySpriteHasNotLoadedYet || inputIsDisabled) return;
+
+        this.events.emit('canAttack', this.canAttack());
 
         this.playerManager.stopPlayer();
 
