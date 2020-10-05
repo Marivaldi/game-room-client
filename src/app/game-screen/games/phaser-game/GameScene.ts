@@ -1,3 +1,4 @@
+import shuffle from 'shuffle-array';
 import { GameKey } from 'src/app/models/enums/game-key';
 import { GameSocketService } from 'src/app/services/game-socket.service';
 import { InputManager } from './InputManager';
@@ -83,8 +84,10 @@ export class GameScene extends Phaser.Scene {
         }, this);
 
         const coinSpawnLayer = this.map.getObjectLayer("CoinSpawn");
+        shuffle(coinSpawnLayer.objects);
         let  coin_id = 0;
-        coinSpawnLayer.objects.forEach((coinSpawn) => {
+        let myCoins = coinSpawnLayer.objects.slice(0, 5);
+        myCoins.forEach((coinSpawn) => {
             let coin = (this.add.sprite(coinSpawn.x, coinSpawn.y, 'animated_coin') as Phaser.GameObjects.Sprite & { body: Phaser.Physics.Arcade.Body });
             coin.setScale(0.1);
             const overLapArea = this.overlapObjectsGroup.create(coin.x, coin.y, null, null, false);
