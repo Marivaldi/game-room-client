@@ -1,4 +1,4 @@
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+
 import { GameKey } from 'src/app/models/enums/game-key';
 import { GameScene } from './GameScene';
 
@@ -21,6 +21,10 @@ export class SocketManager {
                 break;
             case "KILL_PLAYER" :
                 this.scene.playerManager.killPlayer(gameMessage.connectionId);
+                break;
+            case "BODY_FLAGGED":
+                this.scene.events.emit('bodyFlagged', true);
+                this.scene.bodyIsFlagged = true;
                 break;
         }
     }
@@ -80,6 +84,30 @@ export class SocketManager {
             gameMessage: {
                 type: "KILL_PLAYER",
                 connectionId: connectionId
+            }
+        });
+    }
+
+    sendBodyFlaggedMessage() {
+        this.scene.gameSocket.socket$.next({
+            type: "GAME_ACTION",
+            gameKey: GameKey.PHASER_GAME,
+            lobbyId: this.scene.gameSocket.lobbyId,
+            connectionId: this.scene.gameSocket.server_connnection_id,
+            gameMessage: {
+                type: "BODY_FLAGGED"
+            }
+        });
+    }
+
+    sendStartVoteMessage() {
+        this.scene.gameSocket.socket$.next({
+            type: "GAME_ACTION",
+            gameKey: GameKey.PHASER_GAME,
+            lobbyId: this.scene.gameSocket.lobbyId,
+            connectionId: this.scene.gameSocket.server_connnection_id,
+            gameMessage: {
+                type: "START_VOTE"
             }
         });
     }

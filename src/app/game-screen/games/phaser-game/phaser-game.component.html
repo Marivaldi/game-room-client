@@ -1,1 +1,19 @@
-<div id="game-container" class="pt-4 text-center justify-content-center w-100 h-100"></div>
+<div [hidden]="voting" id="game-container" class="pt-4 text-center justify-content-center w-100 h-100"></div>
+
+
+<!--Vote-->
+<div [hidden]="!voting" class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <ul class="list-group mt-4">
+                <li class="list-group-item" *ngFor="let player of playerState">
+                    <h4 *ngIf="player.alive" [class.text-info]="player.isMe" [class.underline]="player.isMe">{{player.username}}</h4>
+                    <h4 *ngIf="!player.alive" class="text-danger"><del>{{player.username}}</del></h4>
+                    <span *ngIf="player.votes > 0" class="badge badge-pill badge-light">{{player.votes}}</span>
+                    <button *ngIf="player.alive && iAmStillAlive()" class="btn btn-link float-right" (click)="voteFor(player.connectionId)">Vote</button>
+                </li>
+            </ul>
+            <button class="btn btn-danger mt-4" (click)="endVote()">Back to Game</button>
+        </div>
+    </div>
+</div>

@@ -21,9 +21,12 @@ export class GameScene extends Phaser.Scene {
     overlapObjectsGroup: Phaser.Physics.Arcade.StaticGroup;
     velocity: number = 100;
     text: Phaser.GameObjects.Text;
+    bodyIsFlagged: boolean = false;
     private tileset;
     private attackCoolingDown: boolean = false;
     private attackOnNextUpdate: boolean = false;
+    private flagOnNextUpdate: boolean = false;
+    private startVoteNextupdate: boolean = false;
     constructor(public gameSocket: GameSocketService) {
         super(sceneConfig);
     }
@@ -34,8 +37,8 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('necromancer', 'assets/necromancer.png', { frameHeight: 72, frameWidth: 52 });
         this.load.spritesheet('hero_2', 'assets/hero_2.png', { frameHeight: 72, frameWidth: 52 });
         this.load.spritesheet('dead', 'assets/dead.png', { frameHeight: 72, frameWidth: 52 });
-        this.load.image("tiles", "/assets/castle.png");
-        this.load.tilemapTiledJSON("map", "/assets/main_map_v2.json");
+        this.load.image("tiles", "/assets/map_textures.png");
+        this.load.tilemapTiledJSON("map", "/assets/main_map_v3.json");
         this.playerManager = new PlayerManager(this);
         this.inputManager = new InputManager(this);
         this.socketManager = new SocketManager(this);
@@ -64,6 +67,10 @@ export class GameScene extends Phaser.Scene {
         hudScene.events.on('attackClicked', () => {
             this.attackOnNextUpdate = true;
         }, this);
+
+        hudScene.events.on('flagClicked', () => {
+            this.flagOnNextUpdate = true;
+        }, this);
     }
 
     public update() {
@@ -77,6 +84,16 @@ export class GameScene extends Phaser.Scene {
         if(this.attackOnNextUpdate) {
             this.playerManager.attackPlayer(this.playerManager.playersInRange[0]);
             this.attackOnNextUpdate = false;
+        }
+
+        if(this.flagOnNextUpdate) {
+            this.socketManager.sendBodyFlaggedMessage();
+            this.flagOnNextUpdate = false;
+        }
+
+        if(this.startVoteNextupdate) {
+            this.socketManager.sendStartVoteMessage();
+            this.startVoteNextupdate = false;
         }
 
         this.playerManager.stopPlayer();
@@ -121,8 +138,8 @@ export class GameScene extends Phaser.Scene {
 
     setupWorldMap() {
         this.map = this.make.tilemap({ key: "map" });
-        this.physics.world.bounds.setTo(0, 0, 416, 416);
-        this.tileset = this.map.addTilesetImage("castle", "tiles");
+        this.physics.world.bounds.setTo(0, 0, 960, 960);
+        this.tileset = this.map.addTilesetImage("map_textures", "tiles");
         this.map.createStaticLayer("Below Player", this.tileset, 0, 0);
         this.worldLayer = this.map.createStaticLayer("World", this.tileset, 0, 0);
         this.worldLayer.setCollisionByProperty({ collides: true });
@@ -190,9 +207,18 @@ export class GameScene extends Phaser.Scene {
             case ObjectType.DEAD_PLAYER:
                 if(!this.playerManager.deadInRange.includes(overlappedObject.name)) {this.playerManager.deadInRange.push(overlappedObject.name);}
                 break;
+            case ObjectType.HOME_BASE:
+                this.handleBaseOverlap();
+                break;
             default:
                 break;
         }
+    }
+
+    handleBaseOverlap() {
+        if(!this.bodyIsFlagged) return;
+
+        this.startVoteNextupdate = true;
     }
 
     makePlayerSlower() {

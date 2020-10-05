@@ -1,4 +1,5 @@
 export class HUDScene extends Phaser.Scene {
+    public joystick: any;
     private attackButton: Phaser.GameObjects.Image;
     private flagButton: Phaser.GameObjects.Image;
     private wavingFlag;
@@ -16,7 +17,17 @@ export class HUDScene extends Phaser.Scene {
 
     public create ()
     {
-        this.flagButton = this.add.image(35, 35, 'flag_button').setScale(0.2).setDepth(10).setAlpha(0.5);
+        const joyStickPlugin: any = this.plugins.get('rexVirtualJoystick');
+        console.log(joyStickPlugin);
+        this.joystick = joyStickPlugin.add(this, {
+            x: 60,
+            y: this.cameras.main.height - 100,
+            radius: 50,
+            base: this.add.circle(0, 0, 50, 0x888888).setAlpha(0.7),
+            thumb: this.add.circle(0, 0, 30, 0xcccccc).setAlpha(0.9)
+        });
+
+        this.flagButton = this.add.image(this.cameras.main.width - 35, this.cameras.main.height - 35, 'flag_button').setScale(0.2).setDepth(10).setAlpha(0.5);
         this.anims.create({
             key: `flag_wave`,
             frames: this.anims.generateFrameNumbers('waving_flag', { start: 0, end: 9}),
@@ -24,7 +35,7 @@ export class HUDScene extends Phaser.Scene {
             repeat: -1
         });
 
-        this.attackButton = this.add.image(35, (this.flagButton.displayHeight*2), 'sword_button').setScale(0.2).setDepth(10).setAlpha(0.5);
+        this.attackButton = this.add.image(this.cameras.main.width - 35, this.cameras.main.height -(this.flagButton.displayHeight*2), 'sword_button').setScale(0.2).setDepth(10).setAlpha(0.5);
 
         this.wavingFlag = this.add.sprite(this.cameras.main.width - 80, 80, 'waving_flag').setScale(0.4).setDepth(10).setAlpha(0.7).setVisible(false);
         this.wavingFlag.anims.play('flag_wave');
