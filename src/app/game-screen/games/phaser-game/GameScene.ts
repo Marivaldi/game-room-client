@@ -20,8 +20,10 @@ export class GameScene extends Phaser.Scene {
     socketManager: SocketManager;
     overlapObjectsGroup: Phaser.Physics.Arcade.StaticGroup;
     velocity: number = 100;
+    text: Phaser.GameObjects.Text;
     private tileset;
     private attackCoolingDown: boolean = false;
+    private attackOnNextUpdate: boolean = false;
     constructor(public gameSocket: GameSocketService) {
         super(sceneConfig);
     }
@@ -57,6 +59,11 @@ export class GameScene extends Phaser.Scene {
         this.gameSocket.pressPlay(GameKey.PHASER_GAME);
 
         this.socketManager.sendGetPlayersMessage();
+
+        const hudScene = this.scene.get('HUDScene');
+        hudScene.events.on('attackClicked', () => {
+            this.attackOnNextUpdate = true;
+        }, this);
     }
 
     public update() {
@@ -65,6 +72,12 @@ export class GameScene extends Phaser.Scene {
         if (mySpriteHasNotLoadedYet || inputIsDisabled) return;
 
         this.events.emit('canAttack', this.canAttack());
+        this.events.emit('canFlag', this.canFlag());
+
+        if(this.attackOnNextUpdate) {
+            this.playerManager.attackPlayer(this.playerManager.playersInRange[0]);
+            this.attackOnNextUpdate = false;
+        }
 
         this.playerManager.stopPlayer();
 
@@ -73,6 +86,9 @@ export class GameScene extends Phaser.Scene {
         this.handlePlayerInput();
 
         this.playerManager.handlePlayerMovement(playerMoving.left, playerMoving.right, playerMoving.down, playerMoving.up);
+
+        this.playerManager.playersInRange = [];
+        this.playerManager.deadInRange = [];
 
         if (!this.playerManager.mySpriteHasMoved()) {
             this.playerManager.stopPlayerAnimations();
@@ -84,7 +100,6 @@ export class GameScene extends Phaser.Scene {
         this.socketManager.sendPlayerMovedMessage();
         this.playerManager.updatePreviousPosition();
         this.velocity = 100;
-        this.playerManager.playersInRange = [];
     }
 
     handlePlayerInput() {
@@ -97,6 +112,11 @@ export class GameScene extends Phaser.Scene {
         const isAKillingRole: boolean = this.playerManager.player.isAKillingRole();
         const atLeastOnePlayerIsInRange: boolean = this.playerManager.playersInRange.length > 0;
         return isAKillingRole && atLeastOnePlayerIsInRange && !this.attackCoolingDown;
+    }
+
+    canFlag() : boolean {
+        const atLeastOneDeadPlayerIsInRange: boolean = this.playerManager.deadInRange.length > 0;
+        return atLeastOneDeadPlayerIsInRange;
     }
 
     setupWorldMap() {
@@ -166,6 +186,9 @@ export class GameScene extends Phaser.Scene {
                 break;
             case ObjectType.OTHER_PLAYER:
                 if(!this.playerManager.playersInRange.includes(overlappedObject.name)) {this.playerManager.playersInRange.push(overlappedObject.name);}
+                break;
+            case ObjectType.DEAD_PLAYER:
+                if(!this.playerManager.deadInRange.includes(overlappedObject.name)) {this.playerManager.deadInRange.push(overlappedObject.name);}
                 break;
             default:
                 break;

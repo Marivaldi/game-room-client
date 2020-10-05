@@ -1,4 +1,5 @@
 import { GameScene } from './GameScene';
+import { ObjectType } from './ObjectType';
 import { Player } from './Player';
 import { PlayerInformation } from './PlayerInformation';
 import { PlayerRoles } from './PlayerRoles';
@@ -6,8 +7,10 @@ import { PlayerRoles } from './PlayerRoles';
 export class PlayerManager {
     player: Player;
     otherPlayers: Map<string, Player> = new Map<string, Player>();
+    deadPlayers: Map<string, Player> = new Map<string, Player>();
     previousPosition: { x: number, y: number } = { x: 0, y: 0 }
     playersInRange: string[] = [];
+    deadInRange: string[] = [];
     private otherPlayersGroup: Phaser.Physics.Arcade.Group;
     private deadPlayersGroup: Phaser.Physics.Arcade.Group;
     private attackIsCoolingDown: boolean = false;
@@ -43,6 +46,7 @@ export class PlayerManager {
         const style = { font: "11px Courier", fill: "#00ff44" };
         this.player.name = this.scene.add.text(this.player.sprite.x - 5, this.player.sprite.y - 11, playerInfo.username, style);
         this.player.sprite.setDepth(3);
+        this.scene.events.emit('isAKillingRole', this.player.isAKillingRole());
     }
 
     stopPlayer() {
@@ -200,11 +204,15 @@ export class PlayerManager {
         const otherPlayer = this.otherPlayers.get(connectionId);
         if (!otherPlayer) return;
 
+        const deadPlayer = new Player(otherPlayer.connectionId, otherPlayer.role);
+        const deadSprite = this.addDeadSprite(otherPlayer.sprite.x, otherPlayer.sprite.y, connectionId);
+        deadPlayer.sprite = (deadSprite as Phaser.Physics.Arcade.Sprite & { body: Phaser.Physics.Arcade.Body });
+        deadPlayer.name = otherPlayer.name.setColor('#8B0000');
+        otherPlayer.overlapArea.type = ObjectType.DEAD_PLAYER;
+        deadPlayer.overlapArea = otherPlayer.overlapArea;
+
         otherPlayer.sprite.anims.stop();
-        this.addDeadPlayer(otherPlayer.sprite.x, otherPlayer.sprite.y, connectionId);
         otherPlayer.sprite.destroy();
-        otherPlayer.name.setColor('#8B0000');
-        otherPlayer.overlapArea.destroy();
         this.playersInRange.filter((inRangeConnectionId) => connectionId !== inRangeConnectionId);
         this.otherPlayers.delete(connectionId);
     }
@@ -224,10 +232,11 @@ export class PlayerManager {
         this.player.role = PlayerRoles.DEAD;
     }
 
-    addDeadPlayer(x: number, y: number, connectionId: string) {
-        const deadPlayer = this.scene.add.sprite(x, y, 'dead');
-        deadPlayer.setScale(0.5);
-        deadPlayer.setDepth(1);
-        this.deadPlayersGroup.add(deadPlayer);
+    addDeadSprite(x: number, y: number, connectionId: string) {
+        const deadSprite = this.scene.add.sprite(x, y, 'dead');
+        deadSprite.setScale(0.5);
+        deadSprite.setDepth(1);
+        this.deadPlayersGroup.add(deadSprite);
+        return deadSprite;
     }
 }
