@@ -5,7 +5,6 @@ import { GameScene } from './GameScene';
 import { HUDScene } from './HUDScene';
 import { Player } from './Player';
 import VirtualJoystickPlugin from 'phaser3-rex-plugins/plugins/virtualjoystick-plugin.js';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { GameKey } from 'src/app/models/enums/game-key';
 
 
@@ -21,6 +20,13 @@ export class PhaserGameComponent implements OnInit {
   hudScene: HUDScene = new HUDScene();
   playerState: (Player & { votes: number, isMe: boolean })[] = [];
   voting: boolean = false;
+  showVoteDecision: boolean = false;
+  timeLeftToVote: number = 60;
+  voteDecision: {tie: boolean, votedOffId: string, votedOffName: string } = {tie: false, votedOffId: "", votedOffName: ""};
+  get percentage(): number {
+    return (this.timeLeftToVote / 60) * 100;
+  }
+  voteInterval;
   @Input() set disableGameInput(disabled: boolean) {
     if (!this.phaserGame) return;
 
@@ -83,6 +89,9 @@ export class PhaserGameComponent implements OnInit {
       case "UPDATE_VOTES":
         this.updateVotes(gameMessage.votes);
         break;
+      case "VOTE_DECISION":
+        this.handleVoteDecision(gameMessage);
+        break;
     }
   }
 
@@ -95,6 +104,17 @@ export class PhaserGameComponent implements OnInit {
 
       this.playerState[i].votes = votes[this.playerState[i].connectionId];
     }
+  }
+
+  handleVoteDecision(gameMessage) {
+    this.voting = false;
+    this.showVoteDecision = true;
+    this.voteDecision.tie = gameMessage.tie;
+    if(gameMessage.tie) return;
+
+    this.voteDecision.votedOffId = gameMessage.connectionId;
+    const player = this.playerState.find((player) => player.connectionId === gameMessage.votedOff);
+    this.voteDecision.votedOffName= player.username
   }
 
   getCurrentPlayerState() {
@@ -111,9 +131,22 @@ export class PhaserGameComponent implements OnInit {
   }
 
   launchVote() {
+    this.timeLeftToVote = 60;
     this.getCurrentPlayerState();
     this.voting = true;
     this.disableGame();
+
+    this.voteInterval = setInterval(() => {
+      if (this.timeLeftToVote > 0) {
+        this.timeLeftToVote--;
+      } else {
+        this.endVote();
+        clearInterval(this.voteInterval);
+        // setTimeout(() => {
+        //   this.sendAnswer();
+        // }, 5000)
+      }
+    }, 1000)
   }
 
   iAmStillAlive(): boolean {
@@ -121,8 +154,15 @@ export class PhaserGameComponent implements OnInit {
   }
 
   endVote() {
-    this.voting = false;
-    this.enableGame();
+    this.gameSocket.socket$.next({
+      type: "GAME_ACTION",
+      gameKey: GameKey.PHASER_GAME,
+      lobbyId: this.gameSocket.lobbyId,
+      connectionId: this.gameSocket.server_connnection_id,
+      gameMessage: {
+        type: "END_VOTE"
+      }
+    });
   }
 
   voteFor(connectionId: string) {

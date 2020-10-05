@@ -1,0 +1,9 @@
+.heartbeat {
+    animation: heartBeat;
+    animation-duration: 1s;
+  }
+
+  .in-left {
+    animation: lightSpeedInLeft;
+    animation-duration: 1s;
+  }

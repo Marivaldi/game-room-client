@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="7">
+<map version="1.4" tiledversion="1.4.2" orientation="orthogonal" renderorder="right-down" width="30" height="30" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="22">
  <editorsettings>
   <export target="main_map_v3.json" format="json"/>
  </editorsettings>
@@ -10042,6 +10042,50 @@
    <point/>
   </object>
   <object id="5" name="spawn_point5" x="410.247" y="539.916">
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="7" name="CoinSpawn">
+  <object id="7" x="656" y="81.3333">
+   <point/>
+  </object>
+  <object id="8" x="80" y="112">
+   <point/>
+  </object>
+  <object id="9" x="45.3333" y="366.667">
+   <point/>
+  </object>
+  <object id="10" x="17.3333" y="465.333">
+   <point/>
+  </object>
+  <object id="11" x="129.333" y="684">
+   <point/>
+  </object>
+  <object id="12" x="146.667" y="862.667">
+   <point/>
+  </object>
+  <object id="13" x="281.333" y="920">
+   <point/>
+  </object>
+  <object id="14" x="585.333" y="902.667">
+   <point/>
+  </object>
+  <object id="15" x="797.333" y="577.333">
+   <point/>
+  </object>
+  <object id="16" x="866.667" y="742.667">
+   <point/>
+  </object>
+  <object id="17" x="834.667" y="858.667">
+   <point/>
+  </object>
+  <object id="18" x="908" y="57.3333">
+   <point/>
+  </object>
+  <object id="19" x="814.667" y="198.667">
+   <point/>
+  </object>
+  <object id="20" x="248" y="202.667">
    <point/>
   </object>
  </objectgroup>

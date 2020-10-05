@@ -19,6 +19,7 @@ export class GameScene extends Phaser.Scene {
     inputManager: InputManager;
     socketManager: SocketManager;
     overlapObjectsGroup: Phaser.Physics.Arcade.StaticGroup;
+    coins: Map<string, any> = new Map<string, any>();
     velocity: number = 100;
     text: Phaser.GameObjects.Text;
     bodyIsFlagged: boolean = false;
@@ -37,6 +38,8 @@ export class GameScene extends Phaser.Scene {
         this.load.spritesheet('necromancer', 'assets/necromancer.png', { frameHeight: 72, frameWidth: 52 });
         this.load.spritesheet('hero_2', 'assets/hero_2.png', { frameHeight: 72, frameWidth: 52 });
         this.load.spritesheet('dead', 'assets/dead.png', { frameHeight: 72, frameWidth: 52 });
+        this.load.spritesheet('headstone', 'assets/headstone.png', { frameHeight: 33, frameWidth: 35 });
+        this.load.spritesheet('animated_coin', 'assets/animated_coin.png', { frameHeight: 129, frameWidth: 141 });
         this.load.image("tiles", "/assets/map_textures.png");
         this.load.tilemapTiledJSON("map", "/assets/main_map_v3.json");
         this.playerManager = new PlayerManager(this);
@@ -57,6 +60,13 @@ export class GameScene extends Phaser.Scene {
         this.setupAnimations('hero_1');
         this.setupAnimations('hero_2');
 
+        this.anims.create({
+            key: `spin`,
+            frames: this.anims.generateFrameNumbers('animated_coin', { start: 0, end: 7 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
         this.gameSocket.gameActionReceived$.subscribe(this.socketManager.handleMessage);
 
         this.gameSocket.pressPlay(GameKey.PHASER_GAME);
@@ -71,6 +81,21 @@ export class GameScene extends Phaser.Scene {
         hudScene.events.on('flagClicked', () => {
             this.flagOnNextUpdate = true;
         }, this);
+
+        const coinSpawnLayer = this.map.getObjectLayer("CoinSpawn");
+        let  coin_id = 0;
+        coinSpawnLayer.objects.forEach((coinSpawn) => {
+            let coin = (this.add.sprite(coinSpawn.x, coinSpawn.y, 'animated_coin') as Phaser.GameObjects.Sprite & { body: Phaser.Physics.Arcade.Body });
+            coin.setScale(0.1);
+            const overLapArea = this.overlapObjectsGroup.create(coin.x, coin.y, null, null, false);
+            overLapArea.type = "Coin";
+            overLapArea.name = `${coin_id}`;
+            overLapArea.body.width = coin.displayWidth;
+            overLapArea.body.height = coin.displayHeight;
+            coin.anims.play('spin');
+            this.coins.set(`${coin_id}`, coin);
+            coin_id++;
+        });
     }
 
     public update() {
@@ -81,17 +106,17 @@ export class GameScene extends Phaser.Scene {
         this.events.emit('canAttack', this.canAttack());
         this.events.emit('canFlag', this.canFlag());
 
-        if(this.attackOnNextUpdate) {
+        if (this.attackOnNextUpdate) {
             this.playerManager.attackPlayer(this.playerManager.playersInRange[0]);
             this.attackOnNextUpdate = false;
         }
 
-        if(this.flagOnNextUpdate) {
+        if (this.flagOnNextUpdate) {
             this.socketManager.sendBodyFlaggedMessage();
             this.flagOnNextUpdate = false;
         }
 
-        if(this.startVoteNextupdate) {
+        if (this.startVoteNextupdate) {
             this.socketManager.sendStartVoteMessage();
             this.startVoteNextupdate = false;
         }
@@ -125,13 +150,13 @@ export class GameScene extends Phaser.Scene {
         if (thePlayerIsPressingSpacebar && this.canAttack()) this.playerManager.attackPlayer(this.playerManager.playersInRange[0]);
     }
 
-    canAttack() : boolean {
+    canAttack(): boolean {
         const isAKillingRole: boolean = this.playerManager.player.isAKillingRole();
         const atLeastOnePlayerIsInRange: boolean = this.playerManager.playersInRange.length > 0;
         return isAKillingRole && atLeastOnePlayerIsInRange && !this.attackCoolingDown;
     }
 
-    canFlag() : boolean {
+    canFlag(): boolean {
         const atLeastOneDeadPlayerIsInRange: boolean = this.playerManager.deadInRange.length > 0;
         return atLeastOneDeadPlayerIsInRange;
     }
@@ -202,21 +227,28 @@ export class GameScene extends Phaser.Scene {
                 this.makePlayerSlower();
                 break;
             case ObjectType.OTHER_PLAYER:
-                if(!this.playerManager.playersInRange.includes(overlappedObject.name)) {this.playerManager.playersInRange.push(overlappedObject.name);}
+                if (!this.playerManager.playersInRange.includes(overlappedObject.name)) { this.playerManager.playersInRange.push(overlappedObject.name); }
                 break;
             case ObjectType.DEAD_PLAYER:
-                if(!this.playerManager.deadInRange.includes(overlappedObject.name)) {this.playerManager.deadInRange.push(overlappedObject.name);}
+                if (!this.playerManager.deadInRange.includes(overlappedObject.name)) { this.playerManager.deadInRange.push(overlappedObject.name); }
                 break;
             case ObjectType.HOME_BASE:
                 this.handleBaseOverlap();
                 break;
+            case ObjectType.COIN:
+                this.collectCoin(this.playerManager.player.connectionId, overlappedObject.name);
+                overlappedObject.destroy();
             default:
                 break;
         }
     }
 
+    collectCoin (connectionId: string, coinId: string) {
+        this.coins.get(coinId).destroy();
+    }
+
     handleBaseOverlap() {
-        if(!this.bodyIsFlagged) return;
+        if (!this.bodyIsFlagged) return;
 
         this.startVoteNextupdate = true;
     }

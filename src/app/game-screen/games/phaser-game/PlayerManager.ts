@@ -240,8 +240,7 @@ export class PlayerManager {
     }
 
     addDeadSprite(x: number, y: number, connectionId: string) {
-        const deadSprite = this.scene.add.sprite(x, y, 'dead');
-        deadSprite.setScale(0.5);
+        const deadSprite = this.scene.add.sprite(x, y, 'headstone');
         deadSprite.setDepth(1);
         this.deadPlayersGroup.add(deadSprite);
         return deadSprite;
