@@ -18,7 +18,6 @@ export class HUDScene extends Phaser.Scene {
     public create ()
     {
         const joyStickPlugin: any = this.plugins.get('rexVirtualJoystick');
-        console.log(joyStickPlugin);
         this.joystick = joyStickPlugin.add(this, {
             x: 60,
             y: this.cameras.main.height - 100,

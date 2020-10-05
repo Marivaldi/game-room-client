@@ -74,7 +74,6 @@ export class PhaserGameComponent implements OnInit {
   }
 
   handleMessage = (gameMessage) => {
-    console.log(gameMessage);
     if (!gameMessage || !gameMessage.type) return;
 
     switch (gameMessage.type) {
